@@ -1,0 +1,20 @@
+
+# - name: print hostname
+#   command: hostname
+#   register: hostname_value
+#   delegate_to: localhost
+#
+# - name: Print result
+#   debug: msg="{{ hostname_value }}"
+#
+# - name: Export the AWS profile
+#   shell: export AWS_PROFILE={{ aws_profile_value }}
+#   delegate_to: localhost
+
+- name: Pull ldap root password from SSM
+  debug: msg="{{ lookup('aws_ssm', '{{ openldap_server_rootuserpath_ssm }}' ) }}"
+  register: openldap_server_rootpw
+  delegate_to: localhost
+
+# - name: Pull aws region value
+#   debug: msg="{{ openldap_server_rootpw.msg }}"

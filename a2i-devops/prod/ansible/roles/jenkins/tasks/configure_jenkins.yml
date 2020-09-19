@@ -1,0 +1,142 @@
+---
+
+- name: Pull AWS prod secret key from SSM
+  debug: msg="{{ lookup('aws_ssm', '{{ aws_prod_secret_key_ssm }}' ) }}"
+  register: aws_prod_secret_key
+  delegate_to: localhost
+
+- name: Pull AWS stage secret key from SSM
+  debug: msg="{{ lookup('aws_ssm', '{{ aws_stage_secret_key_ssm }}' ) }}"
+  register: aws_stage_secret_key
+  delegate_to: localhost
+
+- name: Create .aws folder
+  file:
+    path: /var/lib/jenkins/.aws/
+    state: directory
+    owner: jenkins
+
+- name: Copy aws_config file to .aws location
+  template:
+    src: aws_config
+    dest: /var/lib/jenkins/.aws/config
+
+- name: Copy aws_config file to .aws location
+  template:
+    src: aws_credentials
+    dest: /root/.aws/credentials
+
+- name: Remove default config.xml
+  file:
+    path: /var/lib/jenkins/config.xml
+    state: absent
+
+- name: Add custom config.xml file from template
+  template:
+    src: config.xml
+    dest: "{{ jenkins_home}}/config.xml"
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+
+- name: Restart jenkins server
+  systemd:
+    name: jenkins
+    enabled: yes
+    state: restarted
+
+- name: add jenkins admin password to ansible register
+  shell: "cat /var/lib/jenkins/secrets/initialAdminPassword"
+  register: jenkins_admin_password
+
+- name: Create Jenkins updates directory.
+  file:
+    path: "{{ jenkins_home }}/updates"
+    state: directory
+    owner: jenkins
+    group: jenkins
+
+- name: Download current plugin updates from Jenkins update site.
+  get_url:
+    url: "{{ jenkins_updates_url }}/update-center.json"
+    dest: "{{ jenkins_home }}/updates/default.json"
+    owner: jenkins
+    group: jenkins
+    mode: 0440
+  changed_when: false
+  register: get_result
+  until: get_result is success
+  retries: 3
+  delay: 2
+
+- name: Remove first and last line from json file.
+  replace:
+    path: "{{ jenkins_home }}/updates/default.json"
+    regexp: "1d;$d"
+
+- name: install jenkins plugins
+  jenkins_plugin:
+    name: "{{ item.key }}"
+    version: "{{ item.value['version'] }}"
+    url_username: admin
+    url_password: "{{ jenkins_admin_password.stdout }}"
+    url: "http://{{ jenkins_hostname }}:{{ jenkins_http_port }}"
+  with_dict: "{{ jenkins_plugins }}"
+  register: plugin_result
+  until: plugin_result is success
+  retries: 3
+  delay: 2
+
+- name: download jenkins cli jar file
+  get_url:
+    url: "http://localhost:8080/jnlpJars/jenkins-cli.jar"
+    dest: "{{ jenkins_home }}/jenkins-cli.jar"
+    mode: '0664'
+
+- name: configure onboard job file
+  template:
+    src: onboard_project.xml
+    dest: "{{ jenkins_home }}/onboard_project.xml"
+    mode: '0664'
+
+#- name: create onboard job pipeline
+#  shell: java -jar "{{ jenkins_home }}"/jenkins-cli.jar -s "http://localhost:8080" -auth admin:"{{ jenkins_admin_password.stdout }}" create-job onboard_project < "{{ jenkins_home }}"/onboard_project.xml
+
+- name: configure Global pipeline library plugin
+  template:
+    src: org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml
+    dest: "{{ jenkins_home }}/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml"
+    mode: '0755'
+
+- name: configure Git in GLobal configuration tools
+  template:
+    src: hudson.plugins.git.GitTool.xml
+    dest: "{{ jenkins_home }}/hudson.plugins.git.GitTool.xml"
+    mode: '0755'
+
+- name: configure Gradle in GLobal configuration tools
+  template:
+    src: hudson.plugins.gradle.Gradle.xml
+    dest: "{{ jenkins_home }}/hudson.plugins.gradle.Gradle.xml"
+    mode: '0755'
+
+- name: configure SonarQube Scanner in GLobal configuration tools
+  template:
+    src: hudson.plugins.sonar.SonarRunnerInstallation.xml
+    dest: "{{ jenkins_home }}/hudson.plugins.sonar.SonarRunnerInstallation.xml"
+    mode: '0755'
+
+- name: configure Maven in GLobal configuration tools
+  template:
+    src: hudson.tasks.Maven.xml
+    dest: "{{ jenkins_home }}/hudson.tasks.Maven.xml"
+    mode: '0755'
+
+- debug:
+    msg:
+    - "IMPORTANT------> PLEASE CHANGE THE ADMIN USER PASSWORD AFTER LOGIN. CURRENT PASSWORD IS STORED IN /var/lib/jenkins/secrets/initialAdminPassword FILE."
+
+- name: Restart jenkins server
+  systemd:
+    name: jenkins
+    state: restarted

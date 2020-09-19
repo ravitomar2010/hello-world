@@ -1,0 +1,84 @@
+---
+# tasks file for nifi-toolkit
+
+- name: Update the hostname of the localhost
+  command: hostname {{  ca_server_hostname}}
+  when: is_ca_server == "true"
+
+- name: Delete the /etc/hostname file
+  file:
+    path: /etc/hostname
+    state: absent
+  when: is_ca_server == "true"
+
+- name: Update the /etc/hostname file
+  lineinfile:
+    path: /etc/hostname
+    create: yes
+    line: '{{ ca_server_hostname }}'
+  when: is_ca_server == "true"
+
+- name: Download nifi toolkit packages
+  get_url:
+    url: "{{ nifi_toolkit_download_url }}/{{ nifi_toolkit_version }}/{{ item }}.tar.gz"
+    dest: "/tmp/{{ item }}.tar.gz"
+    mode: '0440'
+    timeout: 7200
+  loop:
+    - "nifi-toolkit-{{ nifi_toolkit_version }}-bin"
+
+- name: Extract nifi toolkit packages to /usr/local/
+  unarchive:
+    src: "/tmp/{{ item }}"
+    dest: /usr/local/
+    remote_src: yes
+  loop:
+    - "nifi-toolkit-{{ nifi_toolkit_version }}-bin.tar.gz"
+
+- name: rename nifi toolkit directories
+  shell: "mv /usr/local/nifi-toolkit-{{ nifi_toolkit_version }}* /usr/local/nifi-toolkit || :"
+
+## ca-server
+
+- name: Get the nifi_toolkit_secret value from SSM
+  debug: msg="{{ lookup('aws_ssm', '{{ tls_toolkit_secret_ssm }}' ) }}"
+  register: nifi_toolkit_secret
+  delegate_to: localhost
+
+- name: start toolkit-server
+  shell: 'cd /usr/local/nifi-toolkit/bin/; nohup ./tls-toolkit.sh server -D "{{ca_server_dn}}" -t {{ nifi_toolkit_secret.msg }} -c "{{ca_server_hostname}}" &'
+  when: is_ca_server == "true"
+
+- name: Debug the var values
+  debug:
+    msg: nohup /usr/local/nifi-toolkit/bin/tls-toolkit.sh server -D "{{ca_server_dn}}" -t {{ nifi_toolkit_secret.msg }} -c "{{ca_server_hostname}}" &
+  when: is_ca_server == "true"
+
+- name: Copy service file to host
+  template:
+    src: "ca_server.service.tpl"
+    dest: "/etc/systemd/system/ca-server.service"
+  when: is_ca_server == "true"
+
+- name: Copy enable server file to host
+  template:
+    src: "enable-server.sh"
+    dest: "/usr/local/nifi-toolkit/bin/enable-server.sh"
+    mode: '0777'
+  when: is_ca_server == "true"
+
+- name: Change the permission of config files
+  shell: chmod 744 /usr/local/nifi-toolkit/bin/config.json
+  when: is_ca_server == "true"
+
+- name: Enable ca-server service
+  shell: systemctl enable ca-server
+  when: is_ca_server == "true"
+
+- name: Reload ca-server service
+  shell: systemctl daemon-reload
+  when: is_ca_server == "true"
+
+- name: Start ca-server service
+  shell: systemctl start ca-server
+  when: is_ca_server == "true"

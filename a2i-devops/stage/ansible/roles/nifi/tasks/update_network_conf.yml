@@ -1,0 +1,57 @@
+---
+
+- name: Update the hostname of the localhost
+  command: hostname {{  dns_name_of_server}}
+
+- name: Delete the /etc/hostname file
+  file:
+    path: /etc/hostname
+    state: absent
+
+- name: Update the /etc/hostname file
+  lineinfile:
+    path: /etc/hostname
+    create: yes
+    line: '{{ dns_name_of_server }}'
+
+- name: Pull the ip address of the host
+  command: hostname --ip-address
+  register: ip_address_private
+
+- name: Print ip address
+  debug:
+    var: ip_address_private.stdout
+
+- name: Check if /etc/nginx/nginx.conf already contains 443 proxy_pass
+  command: grep "proxy_pass {{ip_address_private.stdout}}:9443;" /etc/nginx/nginx.conf
+  register: checknginxconf
+  check_mode: no
+  ignore_errors: yes
+  changed_when: no
+
+- name: Print above values
+  debug:
+    var: checknginxconf.rc == 0
+
+# - name: Greet the world if /tmp/my.conf contains "127.0.0.1"
+#   debug: msg="Hello, world!"
+#   when: checknginxconf.rc == 0
+
+- name: Update the nginx configuration file
+  blockinfile:
+    path: /etc/nginx/nginx.conf
+    block: |
+      stream {
+            server {
+                listen     443;
+                proxy_pass {{ip_address_private.stdout}}:9443;
+            }
+      }
+    insertbefore:  http {
+    marker: '# Update nginx configuration for localhost'
+  when: not checknginxconf.rc == 0
+
+- name: restart nginx service
+  systemd:
+   state: restarted
+   name: nginx

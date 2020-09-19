@@ -1,0 +1,10 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<hudson.plugins.git.GitTool_-DescriptorImpl plugin="git-client@2.8.6">
+  <installations class="hudson.plugins.git.GitTool-array">
+    <hudson.plugins.git.GitTool>
+      <name>{{ git_tool_name }}</name>
+      <home>{{ git_tool_executable_path }}</home>
+      <properties/>
+    </hudson.plugins.git.GitTool>
+  </installations>
+</hudson.plugins.git.GitTool_-DescriptorImpl>

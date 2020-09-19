@@ -1,0 +1,38 @@
+---
+# # - name: Set all the local variable for each node
+# #   import_tasks: set_local_vars.yml
+#
+- name: Check if cleanup is required on the host
+  import_tasks: server_cleanup.yml
+  when: iscleanupneeded == "true"
+
+- name: Check if the presented node is eligible to install nifi
+  import_tasks: check_eligibility.yml
+
+- name: Update network configurations to install nifi
+  import_tasks: update_network_conf.yml
+  when: iseligible == true
+
+- name: Install nifi if the node is eligible
+  import_tasks: install_nifi.yml
+  when: iseligible == true
+
+- name: copy libraries to nifi node
+  import_tasks: copy_libs.yml
+
+- name: Configure nifi if the node is first node
+  import_tasks: configure_nifi_fresh.yml
+  when: (iseligible == true) and (nifi.server_id == "1")
+
+- name: Download nifi cofig files if the node is first node
+  import_tasks: download_conf_files.yml
+  when: (nifi.server_id == "1")
+
+- name: Configure nifi if the node is new node and not first node
+  import_tasks: configure_nifi.yml
+  when: (iseligible == true) and (nifi.server_id != "1")
+#
+# #
+# # - name: Perform local server cleanup
+# #   import_tasks: cleanup.yml
+# #   when: (iseligible == true) and (nifi.server_id == "1")

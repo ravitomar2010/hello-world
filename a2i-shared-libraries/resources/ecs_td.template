@@ -1,0 +1,61 @@
+{
+    "family": "APP_NAME_FE",
+    "networkMode": "awsvpc", 
+    "containerDefinitions": [
+        {
+            "image": "IMAGE_FE",
+            "name": "APP_NAME_FE",
+            "essential": true,
+            "entryPoint": [
+                "sh",
+                "-c",
+                "npm run server"
+            ],
+            "logConfiguration": { 
+                "logDriver": "awslogs",
+                "options": { 
+                    "awslogs-group" : "/ecs/fargate-task-definition",
+                    "awslogs-region": "eu-west-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "portMappings": [
+                {
+                    "containerPort": 3001
+                }
+            ]
+        },
+        {
+            "image": "IMAGE_BE",
+            "name": "APP_NAME_BE",
+            "essential": true,
+            "entryPoint": [
+                "sh",
+                "-c",
+                "npm run start:NODENV"
+            ],
+            "logConfiguration": { 
+                "logDriver": "awslogs",
+                "options": { 
+                    "awslogs-group" : "/ecs/fargate-task-definition",
+                    "awslogs-region": "eu-west-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "portMappings": [
+                {
+                    "containerPort": 3003
+                },
+                {
+                    "containerPort": 389
+                }
+            ]
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024",
+    "executionRoleArn":"arn:aws:iam::530328198985:role/fargate_execution_role"
+}

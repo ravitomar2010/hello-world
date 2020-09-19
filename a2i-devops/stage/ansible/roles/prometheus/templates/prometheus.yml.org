@@ -1,0 +1,269 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+
+- job_name: 'prometheus'
+  scrape_interval: 5s
+  static_configs:
+    - targets: ['localhost:9090']
+
+- job_name: 'kong-api-metrics'
+  scrape_interval: 5s
+  metrics_path: /
+  static_configs:
+    - targets: [ '{{ kong_api_host }}:30617' ]
+    
+- job_name: 'nifi_node_exporter'
+  scrape_interval: 5s
+  static_configs:
+          - targets: {{ nifi_node_host }}
+
+- job_name: 'script_ping'
+  scrape_interval: 5m
+  scrape_timeout: 30s
+  metrics_path: /metrics
+  static_configs:
+          - targets: {{ oracle_exporter }}
+  params:
+    script: [ping]
+
+- job_name: 'script_connect'
+  scrape_interval: 5m
+  scrape_timeout: 30s
+  metrics_path: /metrics
+  static_configs:
+          - targets: {{ oracle_exporter }}
+  params:
+    script: [connectTime]
+
+- job_name: 'kubernetes-apiservers'
+  kubernetes_sd_configs:
+  - role: endpoints
+    api_server: "{{ kubernetes_api_server_addr }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token_file: /etc/prometheus/token
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
+  bearer_token_file: /etc/prometheus/token
+  relabel_configs:
+  - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name]
+    action: keep
+    regex: default;kubernetes;https
+  - target_label: __address__
+    replacement: "{{ kubernetes_api_server_addr }}"
+
+
+- job_name: 'kubernetes-kube-state'
+  tls_config:
+    insecure_skip_verify: true
+  bearer_token_file: /etc/prometheus/token
+  kubernetes_sd_configs:
+  - role: pod
+    api_server: https://"{{ kubernetes_api_server_addr }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token_file: /etc/prometheus/token
+  scheme: https
+  relabel_configs:
+  - action: labelmap
+    regex: __meta_kubernetes_pod_label_(.+)
+  - source_labels: [__meta_kubernetes_namespace]
+    action: replace
+    target_label: kubernetes_namespace
+  - source_labels: [__meta_kubernetes_pod_name]
+    action: replace
+    target_label: kubernetes_pod_name
+  - source_labels: [__meta_kubernetes_pod_label_grafanak8sapp]
+    regex: .*true.*
+    action: keep
+  - target_label: __address__
+    replacement: "{{ kubernetes_api_server_addr }}"
+  - source_labels: ['__meta_kubernetes_pod_label_daemon', '__meta_kubernetes_pod_node_name']
+    regex: 'node-exporter;(.*)'
+    action: replace
+    target_label: nodename
+  - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name]
+    regex: (.+);(.+)
+    target_label: __metrics_path__
+    replacement: /api/v1/namespaces/${1}/pods/${2}/proxy/metrics
+
+###################################################################################
+# Scrape config for nodes (kubelet).                                              #
+#                                                                                 #
+# Rather than connecting directly to the node, the scrape is proxied though the   #
+# Kubernetes apiserver.  This means it will work if Prometheus is running out of  #
+# cluster, or can't connect to nodes for some other reason (e.g. because of       #
+# firewalling).                                                                   #
+###################################################################################
+
+- job_name: 'kubernetes-kubelet'
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
+  bearer_token_file: /etc/prometheus/token
+
+  kubernetes_sd_configs:
+  - role: node
+    api_server: https://"{{ kubernetes_api_server_addr }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token_file: /etc/prometheus/token
+  relabel_configs:
+  - action: labelmap
+    regex: __meta_kubernetes_node_label_(.+)
+  - target_label: __address__
+    replacement: "{{ kubernetes_api_server_addr }}"
+  - source_labels: [__meta_kubernetes_node_name]
+    regex: (.+)
+    target_label: __metrics_path__
+    replacement: /api/v1/nodes/${1}/proxy/metrics
+
+- job_name: 'kubernetes-cadvisor'
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
+  bearer_token_file: /etc/prometheus/token
+  kubernetes_sd_configs:
+  - role: node
+    api_server: https://"{{ kubernetes_api_server_addr }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token_file: /etc/prometheus/token
+  relabel_configs:
+  - action: labelmap
+    regex: __meta_kubernetes_node_label_(.+)
+  - target_label: __address__
+    replacement: "{{ kubernetes_api_server_addr }}"
+  - source_labels: [__meta_kubernetes_node_name]
+    regex: (.+)
+    target_label: __metrics_path__
+    replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+
+
+###################################################################################
+# Example scrape config for service endpoints.                                    #
+#                                                                                 #
+# The relabeling allows the actual service scrape endpoint to be configured       #
+# for all or only some endpoints.                                                 #
+###################################################################################
+
+- job_name: 'kubernetes-service-endpoints'
+
+  kubernetes_sd_configs:
+  - role: endpoints
+    api_server: https://"{{ kubernetes_api_server_addr }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token_file: /etc/prometheus/token
+
+  relabel_configs:
+  - action: labelmap
+    regex: __meta_kubernetes_service_label_(.+)
+  - source_labels: [__meta_kubernetes_namespace]
+    action: replace
+    target_label: kubernetes_namespace
+  - source_labels: [__meta_kubernetes_service_name]
+    action: replace
+    target_label: kubernetes_name
+
+#########################################################################################
+# Example scrape config for probing services via the Blackbox Exporter.                 #
+#                                                                                       #
+# The relabeling allows the actual service scrape endpoint to be configured             #
+# for all or only some services.                                                        #
+#########################################################################################
+
+- job_name: 'kubernetes-services'
+  kubernetes_sd_configs:
+  - role: service
+    api_server: https://"{{ kubernetes_api_server_addr }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token_file: /etc/prometheus/token
+  scheme: https
+  tls_config:
+      insecure_skip_verify: true
+  bearer_token_file: /etc/prometheus/token 
+  relabel_configs:
+  - action: labelmap
+    regex: __meta_kubernetes_service_label_(.+)
+  - target_label: __address__
+    replacement: "{{ kubernetes_api_server_addr }}"
+  - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name]
+    regex: (.+);(.+)
+    target_label: __metrics_path__
+    replacement: /api/v1/namespaces/$1/services/$2/proxy/metrics
+
+##################################################################################
+# Example scrape config for pods                                                 #
+#                                                                                #
+# The relabeling allows the actual pod scrape to be configured                   #
+# for all the declared ports (or port-free target if none is declared)           #
+# or only some ports.                                                            #
+##################################################################################
+
+- job_name: 'kubernetes-pods'
+
+  kubernetes_sd_configs:
+  - role: pod
+    api_server: https://"{{ kubernetes_api_server_addr }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token_file: /etc/prometheus/token
+  relabel_configs:
+  - source_labels: [__address__, __meta_kubernetes_pod_annotation_example_io_scrape_port]
+    action: replace
+    regex: ([^:]+)(?::\d+)?;(\d+)
+    replacement: $1:$2
+    target_label: __address__
+  - action: labelmap
+    regex: __meta_kubernetes_pod_label_(.+)
+  - source_labels: [__meta_kubernetes_namespace]
+    action: replace
+    target_label: kubernetes_namespace
+  - source_labels: [__meta_kubernetes_pod_name]
+    action: replace
+    target_label: kubernetes_pods 
+- job_name: 'kubernetes-service-endpoints-e'
+  kubernetes_sd_configs:
+  - role: endpoints
+    api_server: https://"{{ kubernetes_api_server_addr }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token_file: /etc/prometheus/token
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
+  bearer_token_file: /etc/prometheus/token
+  relabel_configs:
+  - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+    action: keep
+    regex: true
+  - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port]
+    action: replace
+    regex: (\d+)
+    target_label: __meta_kubernetes_pod_container_port_number
+  - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+    action: replace
+    regex: ()
+    target_label: __meta_kubernetes_service_annotation_prometheus_io_path
+    replacement: /metrics
+  - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_pod_container_port_number, __meta_kubernetes_service_annotation_prometheus_io_path]
+    target_label: __metrics_path__
+    regex: (.+);(.+);(.+);(.+)
+    replacement: /api/v1/namespaces/$1/services/$2:$3/proxy$4
+  - target_label: __address__
+    replacement: "{{ kubernetes_api_server_addr }}"
+  - action: labelmap
+    regex: __meta_kubernetes_service_label_(.+)
+  - source_labels: [__meta_kubernetes_namespace]
+    action: replace
+    target_label: kubernetes_namespace
+  - source_labels: [__meta_kubernetes_service_name]
+    action: replace
+    target_label: kubernetes_name
+  - source_labels: [__meta_kubernetes_pod_node_name]
+    action: replace
+    target_label: instance

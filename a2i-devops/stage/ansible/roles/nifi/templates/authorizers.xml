@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<authorizers>
+
+    <userGroupProvider>
+        <identifier>file-user-group-provider</identifier>
+        <class>org.apache.nifi.authorization.FileUserGroupProvider</class>
+        <property name="Users File">./users.xml</property>
+        <property name="Legacy Authorized Users File"></property>
+
+        <property name="Initial User Identity 1"></property>
+    </userGroupProvider>
+
+<userGroupProvider>
+        <identifier>ldap-user-group-provider</identifier>
+        <class>org.apache.nifi.ldap.tenants.LdapUserGroupProvider</class>
+        <property name="Authentication Strategy">SIMPLE</property>
+
+        <property name="Manager DN">{{ ldap.manager_dn }}</property>
+        <property name="Manager Password">{{ manager_passwd.msg }}</property>
+
+        <property name="TLS - Keystore"></property>
+        <property name="TLS - Keystore Password"></property>
+        <property name="TLS - Keystore Type"></property>
+        <property name="TLS - Truststore"></property>
+        <property name="TLS - Truststore Password"></property>
+        <property name="TLS - Truststore Type"></property>
+        <property name="TLS - Client Auth"></property>
+        <property name="TLS - Protocol"></property>
+        <property name="TLS - Shutdown Gracefully"></property>
+
+        <property name="Referral Strategy">FOLLOW</property>
+        <property name="Connect Timeout">10 secs</property>
+        <property name="Read Timeout">10 secs</property>
+
+        <property name="Url">{{ ldap.url }}</property>
+
+        <property name="Identity Strategy">USE_USERNAME</property>
+        <property name="Authentication Expiration">12 hours</property>
+
+        <property name="Page Size"></property>
+        <property name="Sync Interval">10 secs</property>
+
+        <property name="User Search Base">{{ ldap.user_search_base }}</property>
+        <property name="User Object Class">posixAccount</property>
+        <property name="User Search Scope">ONE_LEVEL</property>
+        <property name="User Search Filter"></property>
+        <property name="User Identity Attribute">uid</property>
+        <property name="User Group Name Attribute"></property>
+        <property name="User Group Name Attribute - Referenced Group Attribute"></property>
+
+        <property name="Group Search Base">{{ ldap.group_search_base }}</property>
+        <property name="Group Object Class">posixGroup</property>
+        <property name="Group Search Scope">ONE_LEVEL</property>
+        <property name="Group Search Filter"></property>
+        <property name="Group Name Attribute">cn</property>
+        <property name="Group Member Attribute">memberUid</property>
+        <property name="Group Member Attribute - Referenced User Attribute">cn</property>
+</userGroupProvider>
+
+    <accessPolicyProvider>
+        <identifier>file-access-policy-provider</identifier>
+        <class>org.apache.nifi.authorization.FileAccessPolicyProvider</class>
+        <property name="User Group Provider">ldap-user-group-provider</property>
+        <property name="Authorizations File">./authorizations.xml</property>
+      	<property name="Initial Admin Identity">{{ ldap.initial_admin_id }}</property>
+        <property name="Legacy Authorized Users File"></property>
+        <!--Node Identities-->
+        <property name="Node Identity 1">nifi-1.{{env_dns.msg}}</property>
+        <property name="Node Identity 2">nifi-2.{{env_dns.msg}}</property>
+        <property name="Node Identity 3">nifi.{{env_dns.msg}}</property>
+    <!--    <property name="Node Identity 4">nifi-4.{{env_dns.msg}}</property>
+        <property name="Node Identity 5">nifi-5.{{env_dns.msg}}</property>
+        <property name="Node Identity 6">nifi-6.{{env_dns.msg}}</property>
+        <property name="Node Identity 7">nifi-7.{{env_dns.msg}}</property>
+        <property name="Node Identity 8">nifi-8.{{env_dns.msg}}</property>
+        <property name="Node Identity 9">nifi-9.{{env_dns.msg}}</property>
+        <property name="Node Identity 10">nifi-10.{{env_dns.msg}}</property> -->
+
+    </accessPolicyProvider>
+
+    <authorizer>
+        <identifier>managed-authorizer</identifier>
+        <class>org.apache.nifi.authorization.StandardManagedAuthorizer</class>
+        <property name="Access Policy Provider">file-access-policy-provider</property>
+    </authorizer>
+
+
+</authorizers>

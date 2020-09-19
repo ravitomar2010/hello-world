@@ -1,0 +1,122 @@
+read_all_dbo READ ALL
+
+mstr_batch_sales_return MASTER audit_sysmgmt, sales_return_dbo, sales_return_stage
+
+mstr_batch_uts READ hyke_bi_model
+
+mstr_batch_hyke_fact_model READ wms_dbo, uts_dbo, HYKE_BI_MODEL, loyalty_dbo
+
+mstr_batch_hyke_bi_model READ hyke_fact_model, hyke_fact_model, cluster_dbo, dealer_dbo, loyalty_dbo
+
+mstr_batch_pricing READ ppi_dbo
+
+read_intsoft READ ga_stage, ga_dbo
+
+bi READ ga_stage, ga_dbo
+
+mstr_batch_ga MASTER audit_sysmgmt, ga_dbo, ga_stage
+
+mstr_batch_demand_forecast READ pricing_dbo, ppi_dbo
+
+bi READ ALL
+
+mstr_batch_shipment MASTER audit_sysmgmt, shipment_dbo, shipment_stage
+
+read_ttn READ order_dbo
+
+mstr_batch_supplier_visibility READ bi_dbo, hyke_bi_model, hyke_fact_model
+
+mstr_batch_supplier_visibility MASTER audit_sysmgmt, supplier_visibility
+
+read_write_ttn READ hyke_bi_model
+
+read_ttn READ ALL
+
+hyke_temp MASTER campaign_dbo, campaign_stage
+
+read_intsoft READ ALL
+
+mstr_axiom MASTER ALL
+
+mstr_axiom MASTER ALL
+
+read_write_ttn READWRITE hyke_bi_model, wms_dbo, wms_stage
+
+read_write_ttn READWRITE ALL
+
+hyke_temp MASTER audit_sysmgmt, active_dbo, order_dbo, order_stage, delivery_dbo, delivery_stage
+
+mstr_batch_hyke_bi_model MASTER audit_sysmgmt, hyke_bi_model, hyke_fact_model, erp_dbo, erp_stage
+
+mstr_batch_hyke_fact_model MASTER audit_sysmgmt, hyke_bi_model, hyke_fact_model, erp_dbo, erp_stage
+
+read_ttn READ hyke_fact_model
+
+mstr_batch_bi MASTER audit_sysmgmt, bi, erp_dbo, erp_stage
+
+hyke_temp MASTER invoice_dbo, invoice_stage, uts_dbo, order_dbo, order_stage
+
+mstr_batch_bi_dbo READ ALL
+
+mstr_hyke MASTER ALL
+
+mstr_batch_stg_hykebi MASTER stg_hykebi_dbo
+
+mstr_batch_bi READ ALL
+
+read_axiom READ ALL
+
+read_write_axiom READWRITE ALL
+
+read_ttn READ ALL
+
+mstr_hyke MASTER ALL
+
+qa READ ALL
+
+read_write_intsoft READWRITE ALL
+
+visualisation MASTER bi_dbo
+
+mstr_bi_dbo MASTER audit_sysmgmt, bi_dbo
+
+mstr_bi_dbo READ order_dbo, invoice_dbo, dealer_dbo, credit_dbo
+
+mstr_batch_campaign MASTER audit_sysmgmt, campaign_dbo, campaign_stage
+
+mstr_batch_cluster MASTER audit_sysmgmt, cluster_dbo, cluster_stage
+
+mstr_batch_credit MASTER audit_sysmgmt, credit_dbo, credit_stage
+
+mstr_batch_collection MASTER audit_sysmgmt, collection_dbo, collection_stage
+
+mstr_batch_dealer MASTER audit_sysmgmt, dealer_dbo, dealer_stage
+
+mstr_batch_delivery MASTER audit_sysmgmt, delivery_dbo, delivery_stage
+
+mstr_batch_inventory MASTER audit_sysmgmt, inventory_dbo, inventory_stage
+
+mstr_batch_invoice MASTER audit_sysmgmt, invoice_dbo, invoice_stage
+
+mstr_batch_loyalty MASTER audit_sysmgmt, loyalty_dbo, loyalty_stage
+
+mstr_batch_order MASTER audit_sysmgmt, order_dbo, order_stage
+
+mstr_batch_pms MASTER audit_sysmgmt, pms_dbo, pms_stage
+
+mstr_batch_ppi MASTER audit_sysmgmt, ppi_dbo, ppi_stage
+
+mstr_batch_pricing MASTER audit_sysmgmt, pricing_dbo, pricing_stage
+
+mstr_batch_uts MASTER audit_sysmgmt, uts_dbo, uts_stage
+mstr_batch_audit_sysmgmt MASTER audit_sysmgmt
+mstr_batch_bi MASTER bi_dbo, bi_stage
+mstr_batch_erp MASTER audit_sysmgmt, erp_dbo, erp_stage
+mstr_batch_wms MASTER audit_sysmgmt, wms_dbo, wms_stage
+mstr_batch_ga MASTER audit_sysmgmt, ga_dbo, ga_stage
+mstr_batch_configuration MASTER audit_sysmgmt, configuration_dbo, configuration_stage
+mstr_batch_cashback MASTER audit_sysmgmt, cashback_dbo, cashback_stage
+mstr_batch_wire_transfer MASTER audit_sysmgmt, wire_transfer_dbo, wire_transfer_stage
+mstr_batch_ygag MASTER audit_sysmgmt, ygag_dbo, ygag_stage
+mstr_batch_hykebi MASTER audit_sysmgmt, hykebi_dbo, hykebi_stage
+mstr_batch_sales_return MASTER audit_sysmgmt, sales_return_dbo, sales_return_stage

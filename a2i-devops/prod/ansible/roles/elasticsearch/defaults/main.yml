@@ -1,0 +1,9 @@
+---
+# defaults file for elasticsearch-cluster
+es_version: "7.4.1"
+es_repo_base: "https://artifacts.elastic.co"
+es_repo_name: 7.x
+es_apt_key: "{{ es_repo_base }}/GPG-KEY-elasticsearch"
+es_apt_url: "deb {{ es_repo_base }}/packages/{{ es_repo_name }}/apt stable main"
+es_apt_key_id: "46095ACC8548582C1A2699A9D27D666CD88E42B4"
+es_cluster_name: elasticsearch

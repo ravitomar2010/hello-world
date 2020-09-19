@@ -1,0 +1,55 @@
+---
+# tasks file for redis cluster
+- name: Update apt repo and install Redis
+  apt:
+    update_cache: yes
+    name: redis-server
+    state: present
+
+- name: remove default configs
+  shell: "rm -f /etc/redis/redis.conf"
+
+- name: add template for redis.conf 
+  template:
+    src: redis.config
+    dest: /etc/redis/redis.conf
+
+- name: setting connections
+  shell: "{{ item }}"
+  with_items:
+    - "sysctl -w net.core.somaxconn=1024"
+
+- name: Create redis directory
+  file: 
+    path: "{{ item }}"
+    owner: redis
+    group: redis
+    mode:  0755
+    state: directory
+  with_items:
+    - "/var/redis"
+    - "/var/redis/6379"
+
+- name: Modify service file for redis
+  lineinfile:
+    path: /etc/systemd/system/redis.service
+    regexp: '^Type='
+    line: Type=notify
+
+- name: Modify service file for redis
+  lineinfile:
+    path: /etc/systemd/system/redis.service
+    regexp: '^ExecStart='
+    line: ExecStart=/usr/bin/redis-server /etc/redis/redis.conf --supervised systemd
+
+- name: Modify service file for redis
+  lineinfile:
+    path: /etc/systemd/system/redis.service
+    regexp: '^ReadWriteDirectories=-/var/run/redis'
+    line: ReadWriteDirectories=-/var/redis
+
+- name: Ensure Redis is running and enabled on boot.
+  systemd:
+    state: started
+    enabled: yes
+    name: redis

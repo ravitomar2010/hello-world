@@ -1,0 +1,27 @@
+---
+### DEFAULT VALUES ###
+## These are the default values which are used in case the variables are not defined elsewhere.
+
+#The domain prefix for ldap
+openldap_server_domain_name: a2i.infra
+
+#This is the password for admin for openldap
+openldap_server_rootpw: a2i-ldap-ldap@2020
+
+#The self signed ssl parameters
+openldap_server_country: UA
+openldap_server_state: dubai
+openldap_server_location: dubai
+openldap_server_organization: axiom
+
+openldap_server_enable_ssl: true
+
+## LDAP Group Name
+ldap_group_name: ldap-group
+
+## LDAP ReadOnly User
+readonly_user: ldap
+readonly_userpassword: ldap_bind@2020
+
+## LDAP User details
+default_user_password: test123

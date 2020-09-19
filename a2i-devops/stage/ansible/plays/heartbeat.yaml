@@ -1,0 +1,8 @@
+---
+- name: heartbeat installer
+  hosts: heartbeat
+  remote_user: ubuntu
+  become: yes
+
+  roles:
+  - heartbeat

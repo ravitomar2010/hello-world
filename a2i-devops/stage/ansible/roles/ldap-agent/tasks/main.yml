@@ -1,0 +1,86 @@
+---
+
+    - name: Install packages in non-interactive mode
+      shell: export DEBIAN_FRONTEND=noninteractive;
+
+    - name: Update apt repo
+      apt:
+        update_cache: yes
+        state: present
+
+    - name: Install packges
+      apt:
+        name: "{{ packages }}"
+        state: latest
+      vars:
+        packages:
+        - libpam-ldap
+        - nslcd
+        - sshpass
+
+    - name: Configure the ldap.conf
+      template:
+        src: ldap.conf
+        dest: /etc/ldap.conf
+        mode: 0644
+
+    - name: Configure the common-account
+      template:
+        src: common-account
+        dest: /etc/pam.d/common-account
+        mode: 0644
+
+    - name: Update /etc/nsswitch.conf file
+      no_log: true
+      lineinfile:
+        dest: /etc/nsswitch.conf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^[#]*passwd:', line: 'passwd:         compat ldap' }
+        - { regexp: '^[#]*group:', line: 'group:          compat ldap' }
+        - { regexp: '^[#]*shadow:', line: 'shadow:         compat ldap' }
+
+    - name: Update nslcd.conf file
+      no_log: true
+      lineinfile:
+        dest: /etc/nslcd.conf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^[#]*base', line: 'base  {{ ldap_agent.ldap_search_base }}' }
+        - { regexp: '^[#]*uri', line: 'uri ldap://{{ ldap_agent.ldap_server_url }}/' }
+
+
+    - name: Update /etc/ldap/ldap.conf file
+      no_log: true
+      lineinfile:
+        dest: /etc/ldap/ldap.conf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^[#]*BASE', line: 'BASE  {{ ldap_agent.ldap_search_base }}' }
+        - { regexp: '^[#]*URI', line: 'URI  ldap://{{ ldap_agent.ldap_server_url }}/' }
+
+    - name: Update /etc/ssh/sshd_config file
+      no_log: true
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^[#]*PasswordAuthentication', line: 'PasswordAuthentication yes' }
+
+    - name: Add a line to common-session if it does not exist. This creates the directory for user during login
+      lineinfile:
+        path: /etc/pam.d/common-session
+        line: session optional        pam_mkhomedir.so skel=/etc/skel umask=0022
+        state: present
+
+    - name: restart the sshd and nslcd services
+      service:
+        name: "{{ item }}"
+        state: restarted
+      loop:
+        - nscd
+        - sshd

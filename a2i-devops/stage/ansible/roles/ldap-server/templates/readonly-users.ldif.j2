@@ -1,0 +1,7 @@
+dn: uid={{ readonly_user }},{{ openldap_server_base_dn }}
+cn: {{ readonly_user }}
+objectclass: inetOrgPerson
+objectclass: top
+sn: User
+uid: {{ readonly_user }}
+userpassword: {{ ro_userpw.stdout }}

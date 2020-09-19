@@ -1,0 +1,41 @@
+---
+
+- name: Check if nifi process is already running on server
+  shell: netstat -lt | grep nifi | wc -l
+  register: isnifiprocessrunning
+
+- name: Print
+  debug:
+    var: isnifiprocessrunning.stdout
+
+- name: Ansible check file exists example.
+  stat:
+    path: /usr/local/nifi/
+  register: file_details
+
+- name : Print whether directory exists
+  debug:
+    var: file_details.stat.exists
+
+- name: Set the value of variables to true
+  set_fact:
+    iseligible: "true"
+  when: (isnifiprocessrunning.stdout <= "0") and (file_details.stat.exists == false)
+
+- name: Set the value of variables to false
+  set_fact:
+    iseligible: "false"
+  when: (isnifiprocessrunning.stdout > "0") or (file_details.stat.exists == true)
+
+- name: Print whether node is eligible to install nifi
+  debug:
+    var: iseligible
+
+- name: Check if the host is first host
+  shell: hostname | grep nifi-1 | wc -l
+  register: isfirsthost
+
+- name: Print if the host is first host
+  debug:
+    var: isfirsthost
+  when: isfirsthost.stdout == "1"

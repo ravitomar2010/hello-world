@@ -1,0 +1,4 @@
+dn: cn=jenkins-prod-redshift,ou=groups,dc=a2i,dc=infra
+changetype: modify
+delete: memberuid
+memberuid: sameer.panda

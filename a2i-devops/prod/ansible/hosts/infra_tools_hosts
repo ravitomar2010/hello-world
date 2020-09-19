@@ -1,0 +1,2 @@
+[infra_tools]
+10.12.11.235   ansible_ssh_private_key_file=~/a2i-infra.pem

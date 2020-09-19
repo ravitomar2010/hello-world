@@ -1,0 +1,135 @@
+---
+- name: Run apt-get update command
+  apt:
+    update-cache: yes
+
+- name: Download prometheus packages
+  get_url:
+    url: "{{ prometheus_download_url }}/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: "/tmp/prometheus.tar.gz"
+    mode: '0440'
+    timeout: 7200
+#
+# - name: Printing hostname
+#   command: hostname -f
+#   register: host
+#
+# - name: debugging hostname
+#   debug:
+#   var: host
+
+- name: extract prometheus package
+  unarchive:
+    src: "/tmp/prometheus.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: Creates prometheus directory
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /var/lib/prometheus
+    - /etc/prometheus
+
+- name: copy prometheus libraries
+  shell: "cp -r /tmp/prometheus-{{ prometheus_version }}.linux-amd64/consoles /etc/prometheus && \
+            cp -r /tmp/prometheus-{{ prometheus_version }}.linux-amd64/console_libraries /etc/prometheus"
+
+- name: copy prometheus binaries
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/{{ item }}"
+    dest: /usr/local/bin
+    mode: '1440'
+    remote_src: yes
+  loop:
+    - prometheus
+    - promtool
+#
+# - name: download node exporter package
+#   get_url:
+#     url: "{{ node_exporter_download_url }}"
+#     dest: /tmp/node-exporter.tar.gz
+#     mode: '0440'
+#     timeout: 7200
+#
+# - name: extract node-exporter package
+#   unarchive:
+#     src: "/tmp/node-exporter.tar.gz"
+#     dest: /tmp/
+#
+# - name: copy the node exporter binary
+#   copy:
+#     src: /tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter
+#     dest: /usr/local/bin
+#     mode: '1440'
+
+- name: create prometheus service
+  template:
+    src: prometheus.service
+    dest: "/etc/systemd/system/prometheus.service"
+#
+# - name: create node_exporter service
+#   template:
+#     src: node-exporter.service
+#     dest: "/etc/systemd/system/node-exporter.service"
+
+- name: create prometheus configuration
+  template:
+    src: prometheus.yml
+    dest: "/etc/prometheus/prometheus.yml"
+#
+# - name: create prometheus configuration
+#   template:
+#     src: token
+#     dest: "/etc/prometheus/token"
+
+- name: adding suitable ownership
+  file:
+    path: "{{ item }}"
+    owner: ubuntu
+    group: ubuntu
+  with_items:
+    - /etc/prometheus/
+    - /var/lib/prometheus/
+    - /usr/local/bin/prometheus
+
+- name: adding execute permission to binary
+  file:
+    path: "/usr/local/bin/prometheus"
+    mode: 0700
+
+- name: reload daemon
+  shell: systemctl daemon-reload
+
+- name: start prometheus service
+  systemd:
+    state: started
+    name: prometheus
+    enabled: yes
+
+- name: Creates scripts directory
+  file:
+    path: "~/scripts/update_prometheus_conf"
+    state: directory
+
+
+- name: Get value of ansible directory
+  debug: msg="{{  playbook_dir.split("/")[0:-1]|join("/") }}"
+  register: ansible_home_dir
+
+- name: Copy prometheus update script file to scripts location
+  copy:
+    src: "{{ ansible_home_dir.msg }}/scripts/update_prometheus_conf.sh"
+    dest: "~/scripts/update_prometheus_conf/"
+    mode: '1700'
+
+- name: Copy prometheus template files to scripts location
+  copy:
+    src: "../templates/prometheus.yml.tpl"
+    dest: "~/scripts/update_prometheus_conf/"
+    mode: '1700'
+
+- name: Print value of ansible directory
+  debug:
+    var: ansible_home_dir.msg

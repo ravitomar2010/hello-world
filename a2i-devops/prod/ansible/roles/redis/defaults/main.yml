@@ -1,0 +1,30 @@
+---
+# defaults file for redis
+
+redis_port: 6379
+redis_bind_address: 0.0.0.0
+
+redis_appendonly: "yes"
+
+# Add extra include files for local configuration/overrides.
+redis_includes: []
+
+# Require authentication to Redis with a password.
+redis_password: ""
+
+# Disable certain Redis commands for security reasons.
+redis_disabled_commands: []
+#  - FLUSHDB
+#  - FLUSHALL
+#  - KEYS
+#  - PEXPIRE
+#  - DEL
+#  - CONFIG
+#  - SHUTDOWN
+#  - BGREWRITEAOF
+#  - BGSAVE
+#  - SAVE
+#  - SPOP
+#  - SREM
+#  - RENAME
+#  - DEBUG

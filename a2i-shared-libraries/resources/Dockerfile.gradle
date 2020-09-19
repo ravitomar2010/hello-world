@@ -1,0 +1,7 @@
+FROM openjdk:8-jdk-slim
+ENV PORT 8080
+EXPOSE 8080
+COPY build/libs/*.jar /opt/app.jar
+ADD https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/1.9.0/elastic-apm-agent-1.9.0.jar /opt/apm-agent.jar
+WORKDIR /opt
+CMD ["java", "-javaagent:/opt/apm-agent.jar", "-Dspring.profiles.active=${SPRING_PROFILE}", "-Dspring.cloud.config.uri=${CONFIG_URL}", "-Dspring.cloud.config.profile=${CONFIG_PROFILE}", "-Dserver.port=${PORT}", "-jar", "app.jar"]

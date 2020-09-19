@@ -1,0 +1,25 @@
+---
+# tasks file for kibana
+
+- name: Fail for unsupported OS
+  fail:
+    msg: Only Debian based Linux supported
+  when: ansible_facts['os_family'] != "Debian"
+
+- name: Install a .deb package from the internet.
+  apt:
+    deb: "{{ kibana.download_url }}-{{ kibana.version }}-amd64.deb"
+
+- name: enable the kibana service to start by default
+  shell: update-rc.d kibana defaults 95 10
+
+- name: configure kibana
+  template: 
+    src: kibana.yml
+    dest: /etc/kibana/kibana.yml
+
+- name: Start kibana service
+  service:
+    name: kibana
+    enabled: yes
+    state: started

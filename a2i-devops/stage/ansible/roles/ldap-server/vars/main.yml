@@ -1,0 +1,29 @@
+---
+
+env:
+ RUNLEVEL: 1
+
+##
+lam:
+  enabled: False
+users:
+    - {uidnumber: 1001, first_name: yogesh, last_name: patil, username: yogesh.patil}
+
+# Do not change this entry
+openldap_server_base_dn: "{{ 'dc=' + openldap_server_domain_name.replace('.',',dc=') }}"
+
+#The ldif file
+openldap_server_ldif: domain.ldif.j2
+
+## Root Password
+#openldap_server_rootpw: ttn123
+
+## LDAP Group Name
+ldap_group_name: ldap-basic
+
+## LDAP ReadOnly User
+readonly_user: ldap
+readonly_userpassword: ldap_bind@2020
+
+## LDAP User details
+default_user_password: a2i-ldap-pwd

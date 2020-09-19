@@ -1,0 +1,2 @@
+[pritunl]
+52.215.175.41   ansible_ssh_private_key_file=~/a2i-jump.pem

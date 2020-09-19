@@ -1,0 +1,23 @@
+---
+- name: ldap_server
+  hosts: ldap_server
+  remote_user: ubuntu
+  become: yes
+
+#  pre_tasks:
+#  - name: Execute the script for mounting device
+#    script: ../scripts/mount_device.sh
+
+  roles:
+  - ldap-server
+  - install_env
+  - apache2
+  - filebeat
+  - node-exporter
+
+  vars:
+    openldap_server_domain_name: "a2i.infra"
+    ldap_dn: "ou=groups,dc=a2i,dc=infra"
+    openldap_server_rootuserpath_ssm: "/a2i/infra/ldap/rootpwd"
+    service_name : "ldap"
+    dns_name_of_server : "ldap.a2i.infra"

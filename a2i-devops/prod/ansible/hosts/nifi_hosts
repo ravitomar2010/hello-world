@@ -1,0 +1,15 @@
+## List of all the nifi hosts 
+
+[nifi] 
+
+10.12.6.13 ansible_ssh_private_key_file=~/a2i-stage.pem 
+
+10.12.7.213 ansible_ssh_private_key_file=~/a2i-stage.pem 
+
+## List of nifi hosts for nifi
+[nifi_1]
+10.12.6.13 ansible_ssh_private_key_file=~/a2i-stage.pem 
+
+[nifi_2]
+10.12.7.213 ansible_ssh_private_key_file=~/a2i-stage.pem 
+

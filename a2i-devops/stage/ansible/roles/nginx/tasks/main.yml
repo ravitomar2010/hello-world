@@ -1,0 +1,17 @@
+---
+# tasks file for nginx
+
+
+- name: Fail for unsupported OS
+  fail:
+    msg: Only Debian based Linux supported
+  when: ansible_facts['os_family'] != "Debian"
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+    
+- name: install nginx
+  apt:
+    pkg: nginx
+    state: latest

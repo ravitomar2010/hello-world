@@ -1,0 +1,67 @@
+---
+- name: Get the ip address of the node
+  command: hostname --ip-address
+  register: local_ip_address
+
+- name: Print the IP local_ip_address
+  debug:
+    var: local_ip_address
+
+- name: download node exporter package
+  get_url:
+    url: "{{ node_exporter_download_url }}"
+    dest: /tmp/node-exporter.tar.gz
+    mode: '0440'
+    timeout: 7200
+
+- name: extract node-exporter package
+  unarchive:
+    src: "/tmp/node-exporter.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: copy the node exporter binary and assign proper permissions to file
+  copy:
+    src: /tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter
+    dest: /usr/local/bin
+    mode: '0700'
+    owner: ubuntu
+    group: ubuntu
+    remote_src: yes
+
+- name: create node_exporter service
+  template:
+    src: node-exporter.service
+    dest: "/etc/systemd/system/node-exporter.service"
+
+# - name: Update prometheus configuration
+#   template:
+#     src: prometheus.yml
+#     dest: "/etc/prometheus/prometheus.yml"
+
+# - name: adding suitable ownership
+#   file:
+#     path: "/usr/local/bin/node-exporter"
+#     owner: ubuntu
+#     group: ubuntu
+#     remote_src: 'yes'
+#   become: yes
+#
+#
+# - name: adding execute permission to binary
+#   file:
+#     path: "{{ item }}"
+#     mode: 0700
+#   with_items:
+#     - /usr/local/bin/node-exporter
+
+- name: reload node-exporter daemon
+  shell: systemctl daemon-reload
+  
+- name: start node-exporter service
+  systemd:
+    state: started
+    name: "{{ item }}"
+    enabled: yes
+  loop:
+    - node-exporter

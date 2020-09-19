@@ -1,0 +1,10 @@
+axiom-stage-dwh
+axiom-dev-dwh
+a2i-devops
+a2i-stage-ai
+a2i-stage-personalize
+a2i-stage-demand-forecast
+a2i-rnd
+a2i-hyke-stage-dwh
+a2i-stage-backup
+a2i-devops-stage

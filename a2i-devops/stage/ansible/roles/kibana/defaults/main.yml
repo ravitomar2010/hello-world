@@ -1,0 +1,12 @@
+---
+# defaults file for kibana
+
+kibana:
+  version: "7.4.0" # should be in format v.v.v
+  download_url: "https://artifacts.elastic.co/downloads/kibana/kibana"
+  elasticsearch:
+    user: elasticsearch-admin-user
+    password: a2i-elasticsearch-admin@2020
+    host: http://elasticsearch.a2i.infra:9200
+  hostname: kibana.a2i.infra
+  port: 5601

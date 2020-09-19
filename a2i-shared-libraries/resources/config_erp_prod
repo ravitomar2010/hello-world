@@ -1,0 +1,25 @@
+apiVersion: v1
+preferences: {}
+kind: Config
+clusters:
+- cluster:
+    server: https://D103A9544057339EC414D534840109B0.yl4.eu-west-1.eks.amazonaws.com
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRFNU1USXhPVEV3TURnek1Gb1hEVEk1TVRJeE5qRXdNRGd6TUZvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBT0U2Cm5nMUhPOHFzdHdPUWpjMmc0dHVUcDV3a1Bwb0I1ckNFUWpBcXdjTHVpejZTV0xtaGlwUllFSWN6VXRsNlhNeHQKMlZ4WnhpMnpIUEFmMHdwMEZraFozb0Z1WWtJZm9kNjlZU1VQQ3NWOGgzR3lLUlZ5aE82QmxHeFk5Sjg4R0JmTgpMQXNtN1ovS0poVW1rOWJjTWU3V0lWeUJTRWlBTzhXNnd1WG01V0pRSU1jd0loOVJCWVFLQTBCWlFrMndGUkJoCkZzcEwxcWQxcmpTOFB6SW4vTnloLzA2ZXQvaXJ6ZThqejhEOVg1S1BoOGx5OTdZZk5wVVJoM0V5YzYwT3pqWVMKVDhzLzU0QUNPUlFlZmQyN3FkSFlXWU85NW1sSFpQZytsRnZLMTdDQkNVMXpuMlNaNldMYVhpMGpzMWxKemtxcApJVjJtS3lPekYxNExLUk1sRWNjQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFHRm9jbXE0Tnllc0RaR1Y4dE9TSkd4NjByYVgKVkJoSDNZWDhlR01rM0hnY29nWjRGaW93S0UrekxDWE8vQmZESHhqQjNkZ3RmQ25JR3VqbTJVQXBwNDE4dlVKWApSMlAyQkxBSHFJN0ZqR1AyMUhJNGU3OGwrdEYyODdSNmJCbDVFSHZGTEhnUkxyNFFrTGd5UFFLSWJOQVAzVjRLCmdORnEvRGRvczZXcStHdElLSlI4eU9BLzIxRU5FYUxnUjJybi8zMGRWaVptekZpYjVNck1sVVZvMU52ZHNZclAKRHN2WFo4bnRaOU5yOHp5dmFSQ3VQMDUycGw0eklja1dHRmZyZ2M5WS9QcmZNc0dWdnVtbktqdWZwMVJ5dFQxcwo4UG1aaTdXZUNFUm1KQ2R0N0szNkppUmVwSXQzZnBzWU1Ycll4MnYyYkJ1K2lqZytwSGRERXU2Nk9YST0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  name: eks_axiom-eks-cluster-erp-production
+
+contexts:
+- context:
+    cluster: eks_axiom-eks-cluster-erp-production
+    user: eks_axiom-eks-cluster-erp-production
+  name: eks_axiom-eks-cluster-erp-production
+current-context: eks_axiom-eks-cluster-erp-production
+users:
+- name: eks_axiom-eks-cluster-erp-production
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      command: aws-iam-authenticator
+      args:
+        - "token"
+        - "-i"
+        - "axiom-eks-cluster-erp-production"

@@ -1,0 +1,19 @@
+#projectKey must be unique in a given SonarQube instance
+sonar.projectKey=sonar_projectKey
+#This is the name & version displayed in the SonarQube user interface.
+sonar.projectName=sonar_projectName
+sonar.projectVersion=sonar_projectVersion
+# Encoding of the source files
+sonar.sourceEncoding=UTF-8
+sonar.sources=src
+sonar.language=java
+sonar.java.binaries=build/classes
+#sonar.java.libraries=
+#code coverage
+#sonar.issuesReport.html.enable=true
+#sonar.issuesReport.console.enable=true
+#sonar.java.coveragePlugin=jacoco
+#sonar.jacoco.reportPath=./build/jacoco/test.exec
+#sonar.coverage.jacoco.xmlReportPaths
+#sonar.dynamicAnalysis=reuseReports
+#sonar.junit.reportsPath=build/test-results

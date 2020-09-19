@@ -1,0 +1,8 @@
+---
+#  tasks file for jenkins
+
+- name: Install Jenkins
+  import_tasks: install_jenkins.yml
+
+- name: Configure Jenkins
+  import_tasks: configure_jenkins.yml

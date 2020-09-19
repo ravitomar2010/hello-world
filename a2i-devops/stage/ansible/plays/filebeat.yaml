@@ -1,0 +1,8 @@
+---
+- name: filebeat installer
+  hosts: filebeat
+  remote_user: ubuntu
+  become: yes
+
+  roles:
+  - filebeat

@@ -1,0 +1,37 @@
+---
+
+# - name: Stop the nifi services
+#   shell: nohup ./nifi.sh stop &
+#   args:
+#     chdir: /usr/local/nifi/bin/
+
+- name: Wait for authorizations.xml file 
+  wait_for:
+    path: /usr/local/nifi/authorizations.xml
+    state: present
+    msg: Timeout to find file /usr/local/nifi/authorizations.xml
+
+- name: Download authorizations.xml file
+  fetch:
+    src: /usr/local/nifi/authorizations.xml
+    dest: ./nifi-config/authorizations.xml
+    flat: yes
+
+- name: Download users.xml file
+  fetch:
+    src: /usr/local/nifi/users.xml
+    dest: ./nifi-config/users.xml
+    flat: yes
+
+- name: Download flow.xml.gz file
+  fetch:
+    src: /usr/local/nifi/conf/flow.xml.gz
+    dest: ./nifi-config/flow.xml.gz
+    flat: yes
+#
+# - name: Start the nifi services to normal
+#   shell: /usr/local/nifi/bin/nifi.sh start
+#
+# - name: Pause till the services gets restored totally
+#   pause:
+#     seconds: 60

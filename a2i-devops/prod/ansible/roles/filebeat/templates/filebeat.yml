@@ -1,0 +1,24 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+{% for file in filebeat.log_files %}
+  - "{{ file }}"
+{% endfor %}
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: true
+setup.template.settings:
+  index.number_of_shards: 3
+setup.kibana:
+output.elasticsearch:
+  hosts: ["{{ filebeat.elastic_host }}"]
+  index: "{{ filebeat.index_pattern }}-%{+yyyy.MM.dd}"
+  protocol: "{{ filebeat.elastic_protocol }}"
+  username: "{{ filebeat.elastic_user }}"
+  password: "{{ filebeat.elastic_password }}"
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+setup.template.name: "{{ filebeat.index_pattern }}"
+setup.template.pattern: "{{ filebeat.index_pattern }}-*"

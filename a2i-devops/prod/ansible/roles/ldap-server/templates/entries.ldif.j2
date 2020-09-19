@@ -1,0 +1,12 @@
+dn: ou=users,{{ openldap_server_base_dn }}
+objectClass: top
+objectClass: organizationalUnit
+ou: users
+description: Users
+
+dn: ou=groups,{{ openldap_server_base_dn }}
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+description: Group of users
+

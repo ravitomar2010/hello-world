@@ -1,0 +1,49 @@
+---
+
+- name: Copy kite-nars
+  copy:
+    src: ./lib/nifi-kite-nar-1.11.0.nar
+    dest: /usr/local/nifi/lib/nifi-kite-nar-1.11.0.nar
+    force: no
+    owner: root
+    mode: 0655
+
+- name: Copy mysql-jdbc
+  copy:
+    src: ./lib/mysql-connector-java-8.0.19.jar
+    dest: /usr/local/nifi/lib/mysql-connector-java-8.0.19.jar
+    force: no
+    owner: root
+    mode: 0655
+
+- name: Copy mssql-jdbc
+  copy:
+    src: ./lib/mssql-jdbc-7.4.1.jre11.jar
+    dest: /usr/local/nifi/lib/mssql-jdbc-7.4.1.jre11.jar
+    force: no
+    owner: root
+    mode: 0655
+
+- name: Copy nifi-prometheus jars
+  copy:
+    src: ./lib/nifi-prometheus-nar-1.11.0.nar
+    dest: /usr/local/nifi/lib/nifi-prometheus-nar-1.11.0.nar
+    force: no
+    owner: root
+    mode: 0655
+
+- name: Copy redshift-jdbc
+  copy:
+    src: ./lib/redshift-jdbc42-1.2.16.1027.jar
+    dest: /usr/local/nifi/lib/redshift-jdbc42-1.2.16.1027.jar
+    force: no
+    owner: root
+    mode: 0655
+
+- name: Copy ojdbc jar
+  copy:
+    src: ./lib/ojdbc6.jar
+    dest: /usr/local/nifi/lib/ojdbc6.jar
+    force: no
+    owner: root
+    mode: 0655

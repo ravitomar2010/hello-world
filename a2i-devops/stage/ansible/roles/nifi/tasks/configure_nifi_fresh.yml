@@ -1,0 +1,191 @@
+---
+
+- name: clean if any older certificates are present on nodes
+  file:
+    path: /usr/local/nifi/conf/ssl
+    state: absent
+
+- name: recreate certificates folder
+  file:
+    path: /usr/local/nifi/conf/ssl
+    state: directory
+
+- name: Get the nifi_toolkit_secret value from SSM
+  debug: msg="{{ lookup('aws_ssm', '{{ tls_toolkit_secret_ssm }}' ) }}"
+  register: nifi_toolkit_secret
+  delegate_to: localhost
+
+- name: Create ssl certificates for nifi nodes
+  shell: 'cd /usr/local/nifi/conf/ssl/; /usr/local/nifi-toolkit/bin/tls-toolkit.sh client -D "cn={{ nifi.hostname }},ou=users,dc=a2i,dc=infra" -t {{ nifi_toolkit_secret.msg }} -c "{{ca_server_hostname}}" --subjectAlternativeNames "nifi.{{env_dns.msg}}"'
+  become: yes
+
+- name: Print client certificate generation command
+  debug:
+    msg: 'cd /usr/local/nifi/conf/ssl/; /usr/local/nifi-toolkit/bin/tls-toolkit.sh client -D "cn={{ nifi.hostname }},ou=users,dc=a2i,dc=infra" -t {{ nifi_toolkit_secret.msg }} -c "{{ca_server_hostname}}" &'
+  become: yes
+
+- name: Change permissions of certificate files to be usable to all
+  file:
+    path: /usr/local/nifi/conf/ssl/
+    mode: 0777
+    state: directory
+    recurse: yes
+
+- name: Change the identity provider to ldap
+  lineinfile:
+    path: /usr/local/nifi/conf/nifi.properties
+    regexp: '^nifi.security.user.login.identity.provider='
+    line: 'nifi.security.user.login.identity.provider=ldap-provider'
+
+- name: Change the https web url context path
+  lineinfile:
+    path: /usr/local/nifi/conf/nifi.properties
+    regexp: '^nifi.web.proxy.context.path='
+    line: 'nifi.web.proxy.context.path=/'
+
+- name: Change the http properties value
+  lineinfile:
+    dest: /usr/local/nifi/conf/nifi.properties
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^nifi.web.http.port=8080', line: 'nifi.web.http.port=' }
+    - { regexp: '^nifi.cluster.protocol.is.secure=false', line: 'nifi.cluster.protocol.is.secure=true' }
+
+- name: Change the https host value
+  lineinfile:
+    path: /usr/local/nifi/conf/nifi.properties
+    regexp: '^nifi.web.https.host='
+    line: 'nifi.web.https.host={{nifi.hostname}}'
+
+- name: Change the https port value
+  lineinfile:
+    path: /usr/local/nifi/conf/nifi.properties
+    regexp: '^nifi.web.https.port='
+    line: 'nifi.web.https.port=9443'
+
+- name: Change the https web host proxy url
+  lineinfile:
+    path: /usr/local/nifi/conf/nifi.properties
+    regexp: '^nifi.web.proxy.host='
+    line: 'nifi.web.proxy.host=nifi.{{env_dns.msg}}:443'
+
+- name: Change site-to-site properties
+  lineinfile:
+    dest: /usr/local/nifi/conf/nifi.properties
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^nifi.remote.input.host=', line: 'nifi.remote.input.host=nifi-1.{{env_dns.msg}}' }
+    - { regexp: '^nifi.remote.input.secure=false', line: 'nifi.remote.input.secure=true' }
+    - { regexp: '^nifi.remote.input.socket.port=', line: 'nifi.remote.input.socket.port=10443' }
+
+- name: Update nifi.properties to match the LDAP search pattern
+  blockinfile:
+    path: /usr/local/nifi/conf/nifi.properties
+    block: |
+      nifi.security.identity.mapping.pattern.dn=^CN=(.*?), OU=(.*?), DC=(.*?), DC=(.*?)$
+      nifi.security.identity.mapping.value.dn=$1
+      nifi.security.identity.mapping.transform.dn=NONE
+    insertbefore:  nifi.security.identity.mapping.pattern.dn
+    marker: '# Update identity mapings as per LDAP configuration'
+
+###Configure Security properties
+
+- name: Change security properties
+  lineinfile:
+    dest: /usr/local/nifi/conf/nifi.properties
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^nifi.security.keystore=', line: 'nifi.security.keystore=./conf/ssl/keystore.jks' }
+    - { regexp: '^nifi.security.truststore=', line: 'nifi.security.truststore=./conf/ssl/truststore.jks' }
+    - { regexp: '^nifi.security.keystoreType=', line: 'nifi.security.keystoreType=jks' }
+    - { regexp: '^nifi.security.truststoreType=', line: 'nifi.security.truststoreType=jks' }
+
+- name: Get the config file locally to fetch jks values
+  fetch:
+    src: /usr/local/nifi/conf/ssl/config.json
+    dest: ./config.json
+    flat: yes
+
+- name: Load config.json file from certifications
+  include_vars:
+    file: config.json
+    name: var_config_jks
+
+- name: Print config file
+  debug:
+    var: var_config_jks
+
+- name: Change security properties -truststore passwords
+  lineinfile:
+    dest: /usr/local/nifi/conf/nifi.properties
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^nifi.security.keystorePasswd=', line: 'nifi.security.keystorePasswd={{var_config_jks.keyStorePassword}}' }
+    - { regexp: '^nifi.security.keyPasswd=', line: 'nifi.security.keyPasswd={{var_config_jks.keyPassword}}' }
+    - { regexp: '^nifi.security.truststorePasswd=', line: 'nifi.security.truststorePasswd={{var_config_jks.trustStorePassword}}' }
+
+##Setup in cluster mode
+
+- name: Add the zookeeper string in properties file
+  lineinfile:
+    path: /usr/local/nifi/conf/nifi.properties
+    regexp: '^nifi.zookeeper.connect.string='
+    line: 'nifi.zookeeper.connect.string=zk-1.a2i.stage:2181,zk-2.a2i.stage:2181,zk-3.a2i.stage:2181'
+
+- name: Add the nifi node as a part of cluster
+  lineinfile:
+    dest: /usr/local/nifi/conf/nifi.properties
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^nifi.cluster.is.node=false', line: 'nifi.cluster.is.node=true' }
+    - { regexp: '^nifi.cluster.node.protocol.port=', line: 'nifi.cluster.node.protocol.port=11443' }
+    - { regexp: '^nifi.cluster.node.address=', line: 'nifi.cluster.node.address={{nifi.hostname}}' }
+    - { regexp: '^nifi.cluster.flow.election.max.wait.time=5 mins', line: 'nifi.cluster.flow.election.max.wait.time=1 mins' }
+
+## Update zookeeper connection string in state management file.
+- name: Update the state management file
+  template:
+    src: state-management.xml
+    dest: /usr/local/nifi/conf/state-management.xml
+
+## Cleanup old authorizations and users file
+- name: Delete authorizations.xml file if already exists
+  file:
+    path: /usr/local/nifi/authorizations.xml
+    state: absent
+
+- name: Delete users.xml file if already exists
+  file:
+    path: /usr/local/nifi/users.xml
+    state: absent
+
+## Local cleanup
+- name: Remove file (delete file) - Local cleanup
+  file:
+    path: ./config.json
+    state: absent
+  delegate_to: localhost
+
+- name: Start the nifi services
+  shell: nohup ./nifi.sh start &
+  args:
+    chdir: /usr/local/nifi/bin/
+
+- name: Wait for authorizations.xml file
+  wait_for:
+    path: /usr/local/nifi/authorizations.xml
+    state: present
+    msg: Timeout to find file /usr/local/nifi/authorizations.xml
+
+#
+# - name: Restart service nifi, in all cases
+#   service:
+#     name: nifi
+#     state: restarted
+
+#- name: Update the prometheus conf for nifi dns

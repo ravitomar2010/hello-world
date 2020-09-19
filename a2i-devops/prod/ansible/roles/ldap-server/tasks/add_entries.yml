@@ -1,0 +1,58 @@
+- name: Replace ldap server name in config file.
+  replace:
+    path: /etc/phpldapadmin/config.php
+    regexp: 'My LDAP Server'
+    replace: '{{ ldap_server_name }}'
+
+- name: Replace ldap server name in config file.
+  replace:
+    path: /etc/phpldapadmin/config.php
+    regexp: 'dc=example,dc=com'
+    replace: '{{ dn_name_to_replace }}'
+
+- name: Generate the default user password hash
+  shell: slappasswd -s {{ default_user_password }}
+  register: default_userpw
+  no_log: true
+
+- name: Generate the readonly user password hash
+  shell: slappasswd -s {{ readonly_userpassword }}
+  register: ro_userpw
+  no_log: true
+
+- name: Copy the template ldif files
+  template: src={{ item }} dest=/tmp/
+  with_items:
+    - entries.ldif.j2
+    - readonly-users.ldif.j2
+    - ldap-groups.ldif.j2
+
+- name: Add mappings to readonly-users.ldif.j2
+  blockinfile:
+    path: /tmp/readonly-users.ldif.j2
+    block: |
+      dn: cn={{ item.first_name }} {{ item.last_name }},ou=users,{{ openldap_server_base_dn }}
+      cn: {{ item.first_name }} {{ item.last_name }}
+      gidnumber: 500
+      givenname: {{ item.first_name }}
+      homedirectory: /home/users/{{ item.username }}
+      loginshell: /bin/sh
+      objectclass: inetOrgPerson
+      objectclass: posixAccount
+      objectclass: top
+      sn: {{ item.last_name }}
+      uid: {{ item.username }}
+      uidnumber: {{ item.uidnumber }}
+      userpassword: {{ default_userpw.stdout }}
+
+    marker: "\n# {mark} ANSIBLE MANAGED BLOCK {{ item.first_name }}"
+  loop:
+      "{{ users }}"
+
+- name: Adding ldap entries as per template files
+  shell: >
+    ldapadd -x -c -D "cn=admin,{{ openldap_server_base_dn }}" -w {{ openldap_server_rootpw.msg }} -f '/tmp/{{ item }}'
+  with_items:
+    - entries.ldif.j2
+    - readonly-users.ldif.j2
+    - ldap-groups.ldif.j2

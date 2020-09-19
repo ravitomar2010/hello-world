@@ -1,0 +1,13 @@
+---
+- name: set the variable string for dns_name_of_server
+  set_fact:
+    var_dns_name_of_server: dns_name_of_server_nifi_{{nifi.server_id}}
+
+- name: set the value for dns_name_of_server
+  debug:
+      var: "{{var_dns_name_of_server}}"
+  register: dns_name_of_server
+
+- name: Print the value for dns
+  debug:
+    var: dns_name_of_server."{{var_dns_name_of_server}}"

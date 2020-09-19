@@ -1,0 +1,25 @@
+---
+- name: elastic
+  hosts: elastic
+  remote_user: ubuntu
+  become: yes
+
+  pre_tasks:
+  - name: Execute the script for mounting device
+    script: ../scripts/mount_device.sh
+
+  roles:
+  - java
+  - zookeeper
+  - elasticsearch
+  - install_env
+  - filebeat
+  - node-exporter
+
+  vars:
+    aws_region: eu-west-1
+    environment: stage
+    platform: a2i
+    service_name : "elasticsearch"
+    dns_name_of_server : "elasticsearch.a2i.infra"
+    zk_server_id  : "3"

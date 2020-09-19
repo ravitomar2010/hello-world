@@ -1,0 +1,70 @@
+---
+# tasks file for installing required environment
+
+- name: Update apt repo
+  apt:
+    update_cache: yes
+
+- name: add universe repository for bionic
+  apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu bionic universe
+    state: present
+
+- name: install python
+  apt:
+    pkg:
+    - unzip
+    - python
+    - apt-transport-https
+
+- name: install python3-pip
+  apt:
+    pkg:
+    - python3-pip
+
+- name: install aws cli from pip3 on Ubuntu
+  shell: "/usr/bin/pip3 install --upgrade --user awscli;sudo apt install awscli -y;"
+  when: ansible_distribution == 'Ubuntu'
+
+- name: install aws cli from pip3 CentOS/ RedHat
+  shell: "/usr/bin/pip3 install --upgrade --user awscli;sudo yum install awscli -y;"
+  when: ansible_distribution == 'CentOS' or
+        ansible_distribution == 'Red Hat Enterprise Linux' or
+        ansible_distribution == 'RedHat'
+
+#- name: install aws cli from pip
+#  pip:
+#    name: awscli
+
+# - name: download eksctl binary
+#   unarchive:
+#     src: https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz
+#     dest: /usr/local/bin
+#     remote_src: yes
+#
+# - name: download kubectl binary
+#   get_url:
+#     url: https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/linux/amd64/kubectl
+#     dest: /usr/local/bin
+#     mode: '0755'
+#     remote_src: yes
+#
+# - name: Retrieve helm binary archive.
+#   unarchive:
+#     src: https://storage.googleapis.com/kubernetes-helm/helm-v2.15.2-linux-amd64.tar.gz
+#     dest: /tmp
+#     creates: /usr/local/bin/helm
+#     remote_src: yes
+
+- name: download aws-iam-authenticator binary
+  get_url:
+    url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator
+    dest: /usr/local/bin
+    mode: '0755'
+    remote_src: yes
+
+- name: export path
+  shell: "export PATH=$HOME/bin:$PATH"
+
+- name: Add $HOME/bin to PATH environment variable
+  shell: "echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc"

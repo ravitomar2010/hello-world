@@ -1,0 +1,22 @@
+{
+  "days" : 1095,
+  "keySize" : 2048,
+  "keyPairAlgorithm" : "RSA",
+  "signingAlgorithm" : "SHA256WITHRSA",
+  "dn" : "cn=nifi-2.a2i.stage,ou=users,dc=a2i,dc=infra",
+  "keyStore" : "keystore.jks",
+  "keyStoreType" : "jks",
+  "keyStorePassword" : "UD0Knhe/d2XHKB3yMOh/1+J9NjthVIBr+ao78DKRWIc",
+  "keyPassword" : "UD0Knhe/d2XHKB3yMOh/1+J9NjthVIBr+ao78DKRWIc",
+  "token" : "irzIJYMOCfDglx9vqrazok50JbRxsbXSTKjnr1gU",
+  "caHostname" : "ca-server.a2i.infra",
+  "port" : 8443,
+  "dnPrefix" : "CN=",
+  "dnSuffix" : ", OU=NIFI",
+  "reorderDn" : true,
+  "additionalCACertificate" : "",
+  "domainAlternativeNames" : [ "nifi.a2i.stage" ],
+  "trustStore" : "truststore.jks",
+  "trustStorePassword" : "X4zQ6fyxHTz1G3LGqJRpvJqLT1mvsycIa9gKHHoQ63o",
+  "trustStoreType" : "jks"
+}

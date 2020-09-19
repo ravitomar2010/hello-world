@@ -1,0 +1,11 @@
+---
+- name: stop the nifi service
+  shell: /usr/local/nifi/bin/nifi.sh stop
+  ignore_errors: yes
+
+
+- name: Remove the nifi and nifi-toolkit packages
+  shell: rm -rf /usr/local/nifi*
+#
+# - name: Remove the nifi-toolkit packages
+#   shell: rm -rf /usr/local/nifi-toolkit*

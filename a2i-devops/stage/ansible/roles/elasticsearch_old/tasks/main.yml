@@ -1,0 +1,65 @@
+---
+# tasks file for elasticsearch cluster
+- name: Update apt repo
+  apt:
+    update_cache: yes
+    state: present
+
+- name: Install openjdk 8
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - openjdk-8-jdk
+
+- name: Add Elasticsearch repository key
+  apt_key:
+    url: '{{ es_apt_key }}'
+    id: '{{ es_apt_key_id }}'
+    state: present
+
+- name: Install Elasticsearch repository
+  become: yes
+  block:
+  - name: Install apt-transport-https to support https APT downloads
+    apt:
+      name: apt-transport-https
+      state: present
+
+- name: Add elasticsearch repository
+  apt_repository:
+    repo: '{{ item.repo }}'
+    state: '{{ item.state }}'
+    filename: elastic-{{ es_repo_name }}.list
+    update_cache: yes
+  with_items:
+    - { repo: "{{ es_apt_url }}", state: "present" }
+
+- name: install elasticsearch
+  apt:
+    name: elasticsearch
+    state: present
+    update_cache: yes
+
+- name: remove default configs
+  shell: "rm -f /etc/elasticsearch/elasticsearch.yml"
+
+- name: add template for elasticsearch.yml
+  template:
+    src: elasticsearch.yml
+    dest: /etc/elasticsearch/elasticsearch.yml
+
+- name: Install elasticsearch plugins
+  become: yes
+  command: "/usr/share/elasticsearch/bin/elasticsearch-plugin install {{ item }} --batch --silent"
+  with_items: 
+    - "ingest-attachment"
+    - "discovery-ec2"
+
+- name: Ensure Elasticsearch is running and enabled on boot.
+  systemd:
+    state: restarted
+    enabled: yes
+    name: elasticsearch

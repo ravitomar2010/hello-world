@@ -1,0 +1,20 @@
+---
+- name: pritunl
+  hosts: pritunl
+  remote_user: ubuntu
+  become: yes
+
+  pre_tasks:
+  - name: Execute the script for mounting device
+    script: ../scripts/mount_device.sh
+
+  roles:
+  - install_env
+  - pritunl
+  - filebeat
+  # - node-exporter
+
+  vars:
+    vault_password: PrItUnL@007
+    service_name : "vpn"
+    dns_name_of_server : "vpn.a2i.infra"

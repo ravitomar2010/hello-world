@@ -1,0 +1,9 @@
+---
+# defaults file for nifi-tollkit
+nifi_toolkit_version: 1.11.0
+nifi_toolkit_download_url: https://archive.apache.org/dist/nifi
+nifi_toolkit_secret: SueproGAEKJAF
+nifi_toolkit_port: 9999
+is_ca_server : false
+tls_toolkit_secret_ssm: /a2i/infra/nifi_toolkit/tlssecret
+ca_server_dn :  "ca-server.a2i.infra"

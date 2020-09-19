@@ -1,0 +1,13 @@
+{% if groups['mongodb'][0] == inventory_hostname %}
+rs.initiate()
+{% for host in groups['mongodb'] %}
+{% if host != inventory_hostname %}
+rs.add("{{ host }}:27017")
+{% endif %}
+sleep(1000)
+{% endfor %}
+printjson(rs.status())
+{% else %}
+sleep(20000)
+{% endif %}
+sleep(2000)

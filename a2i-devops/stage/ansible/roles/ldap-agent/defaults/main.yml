@@ -1,0 +1,9 @@
+---
+# defaults file for ldap-agent
+
+ldap_agent:
+  ldap_server_url: ldap.a2i.infra
+  ldap_search_base: dc=a2i,dc=infra
+  ldap_default_bind_dn: uid=ldap,dc=a2i,dc=infra
+  ldap_default_authtok: ldap_bind@2020
+  ldap_access_filter: (&(accountStatus=Active)(memberOf=cn=sshaccess,ou=groups,dc=a2i,dc=infra))

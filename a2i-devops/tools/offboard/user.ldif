@@ -1,0 +1,2 @@
+dn: cn=sameer.panda,ou=users,dc=a2i,dc=infra
+changetype: delete

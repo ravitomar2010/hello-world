@@ -1,0 +1,3 @@
+https://supplier-portal.hyke.ai/ supplier-portal
+https://nifi-stage-a2i.hyke.ai/nifi/ nifi-prod
+http://nifi-registry.a2i.infra:18080/nifi-registry/ nifi-registry

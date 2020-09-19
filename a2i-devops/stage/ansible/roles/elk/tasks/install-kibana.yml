@@ -1,0 +1,59 @@
+---
+
+- name: Install opendistroforelasticsearch-kibana
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - opendistroforelasticsearch-kibana
+
+- name: Change the kibana properties value
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    regexp: "localhost:9200"
+    line: "elasticsearch.hosts: https://elk.a2i.infra:9200"
+
+- name: Add custom configuration parameter comments to conf file
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    line: '########## Custom configurations ##########'
+
+- name: change host parameter to allow all address
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    line: 'server.host: "0.0.0.0"'
+
+- name: set server port
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    line: 'server.port: 5601'
+
+
+- name: create empty log file for kibana
+  shell: "touch /var/log/kibana.log & chmod 777 /var/log/kibana.log"
+
+- name: set log destination for kibana
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    line: 'logging.dest: "/var/log/kibana.log"'
+
+- name: Add end of custom configurations comment
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    line: '########## End of custom configurations ##########'
+
+- name: Reload daemons
+  shell: "/bin/systemctl daemon-reload"
+  become: true
+
+- name: Enable kibana service
+  service:
+    name: kibana.service
+    enabled: yes
+
+- name: Start kibana service
+  service:
+    name: kibana.service
+    state: started

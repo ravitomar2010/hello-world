@@ -1,0 +1,77 @@
+---
+
+################## Nifi play for node nifi_1 #####################
+
+- name: Install and configure nifi for node nifi_1
+  hosts: nifi_1
+  remote_user: ubuntu
+  become: yes
+  pre_tasks:
+  - name: Execute the script for mounting device
+    script: ../scripts/mount_device.sh
+
+  roles:
+  - java
+  - nginx
+  - nifi
+  - install_env
+  - filebeat
+  - node-exporter
+
+  vars:
+    # ldap related variables
+    ldap:
+      manager_dn                          : "uid=ldap,dc=a2i,dc=infra"
+      url                                 : "ldap://ldap.a2i.infra:389"
+      user_search_base                    : "ou=users,dc=a2i,dc=infra"
+      user_filter                         : "cn={0}"
+      group_search_base                   : "ou=groups,dc=a2i,dc=infra"
+      node_identity_cn                    : "cn=nifi.a2i.stage,dc=a2i,dc=infra"
+      initial_admin_id                    : "nifi-admin"
+    nifi:
+      hostname_nifi_1               : "nifi-1.a2i.stage"
+      server_id                           : "1"
+    nifi_binduserpath_ssm                 : "/a2i/infra/ldap/bindpwd"
+    iscleanupneeded_nifi_1          : "false"
+    service_name_nifi_1             : "nifi-1"
+    dns_name_of_server_nifi_1       : "nifi-1.a2i.stage"
+
+
+################## Nifi play for node nifi_2 #####################
+
+- name: Install and configure nifi for node nifi_2
+  hosts: nifi_2
+  remote_user: ubuntu
+  become: yes
+  pre_tasks:
+  - name: Execute the script for mounting device
+    script: ../scripts/mount_device.sh
+
+  roles:
+  - java
+  - nginx
+  - nifi
+  - install_env
+  - filebeat
+  - node-exporter
+
+  vars:
+    # ldap related variables
+    ldap:
+      manager_dn                          : "uid=ldap,dc=a2i,dc=infra"
+      url                                 : "ldap://ldap.a2i.infra:389"
+      user_search_base                    : "ou=users,dc=a2i,dc=infra"
+      user_filter                         : "cn={0}"
+      group_search_base                   : "ou=groups,dc=a2i,dc=infra"
+      node_identity_cn                    : "cn=nifi.a2i.stage,dc=a2i,dc=infra"
+      initial_admin_id                    : "nifi-admin"
+    nifi:
+      hostname_nifi_2               : "nifi-2.a2i.stage"
+      server_id                           : "2"
+    nifi_binduserpath_ssm                 : "/a2i/infra/ldap/bindpwd"
+    iscleanupneeded_nifi_2          : "false"
+    service_name_nifi_2             : "nifi-2"
+    dns_name_of_server_nifi_2       : "nifi-2.a2i.stage"
+
+
+################## End of node Plays #####################

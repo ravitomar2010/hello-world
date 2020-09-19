@@ -1,0 +1,5 @@
+dn: cn=ldap_group_name_replace_me,ou=groups,openldap_server_base_dn_replace_me
+cn: ldap_group_name_replace_me
+gidnumber: gid_replace_me
+objectclass: posixGroup
+objectclass: top

@@ -1,0 +1,13 @@
+openldap_server_pkgs:
+  - slapd
+  - ldap-utils
+  - python-selinux
+  - openssl
+phpldapadmin_pkgs:
+  - phpldapadmin
+openldap_server_app_path: "/etc/ldap"
+openldap_server_user: "openldap"
+phpldapadmin_config_path: "/etc/phpldapadmin"
+apache2_config_path: "/etc/apache2/sites-enabled"
+ldap_server_name: "a2i-ldap-server"
+dn_name_to_replace: "dc=a2i,dc=infra"

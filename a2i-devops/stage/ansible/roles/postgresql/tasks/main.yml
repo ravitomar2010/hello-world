@@ -1,0 +1,34 @@
+---
+# tasks file for postgresql
+
+- name: Fail for unsupported OS
+  fail:
+    msg: Only Debian based Linux supported
+  when: ansible_facts['os_family'] != "Debian"
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+#- name: Import the public key used by the package management system
+#  apt_key: 
+#    keyserver: "{{ postgres.key_url }}"
+#    state: present
+
+
+#- name: Add Posgresql repository
+#  apt_repository: 
+#    repo: "{{ postgres.repo_url }}"
+#    state: present
+
+- name: install postgres
+  apt:
+    pkg: "{{ postgres.pkg }}"
+    state: latest 
+    update_cache: yes
+
+- name: enable and start postgresql
+  service:
+    name: postgresql
+    enabled: yes
+    state: started

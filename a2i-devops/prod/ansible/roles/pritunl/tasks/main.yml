@@ -1,0 +1,67 @@
+---
+# tasks file for pritunl-vpn
+- name: Add an apt key by id from a keyserver
+  apt_key:
+    keyserver: hkp://keyserver.ubuntu.com
+    id: 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+
+- apt_repository:
+    repo: deb http://repo.pritunl.com/stable/apt bionic main
+    state: present
+    filename: pritunl.list
+
+- name: Update repository and Upgrade packages
+  apt:
+    #upgrade: dist
+    update_cache: yes
+
+- name: Install pritunl packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - software-properties-common
+    - pritunl
+#    - mongodb-org
+    - mongodb
+
+- name: start and enable pritunl service
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  with_items:
+    - "pritunl"
+    - "mongodb"
+
+- name: stop pritunl service
+  systemd:
+    name: pritunl
+    state: stopped
+
+- name: configure mongodb for pritunl
+  shell: "pritunl set-mongodb mongodb://localhost:27017/pritunl"
+
+- name: start pritunl service
+  systemd:
+    name: pritunl
+    state: restarted
+
+- name: make vault password file on localhost
+  copy:
+    content: "{{ vault_password }}"
+    dest: "{{ vault_directory }}/.vault_pass" 
+  delegate_to: localhost
+
+- shell: "pritunl default-password | awk 'NR==3, NR==4 {print $0}'"
+  register: administrator
+
+- name: Important - copy pritunl administrator creds to local file "/tmp/PritunlPassword.yml"
+  copy:
+    content: "{{ administrator.stdout }}"
+    dest: "/tmp/PritunlPassword.yml"
+  delegate_to: localhost
+
+- name: encrypt pritunl creds file with Ansible Vault
+  shell: "ansible-vault encrypt /tmp/PritunlPassword.yml --vault-password-file {{ vault_directory }}/.vault_pass"
+  delegate_to: localhost

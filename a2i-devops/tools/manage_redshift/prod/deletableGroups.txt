@@ -1,0 +1,17 @@
+dev_axiom nidhi_goel, radha, anees, naveen
+developer radha
+devops yogesh_patil
+ds shorveer, naveen
+ediusers radha, vanshika
+hyke_temp vanshika, anees
+intsoft_qa  None
+mstr_axiomdev radha, anees
+mstr_demandforecast
+mstr_ds
+mstr_intsoft  None
+mstr_ttn  None
+qa space_management
+read_write_axiom yogesh_patil, naveen, anees
+read_write_intsoft raj_bhalla
+read_write_ttn vanshika, yogesh_patil, naveen, sandeep_sunkavalli, anees
+service stage_srv

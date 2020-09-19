@@ -1,0 +1,8 @@
+---
+
+## Local cleanup
+- name: Remove file (delete file) - Local cleanup
+  file:
+    path: ./nifi-config
+    state: absent
+  delegate_to: localhost

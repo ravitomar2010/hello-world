@@ -1,0 +1,23 @@
+---
+- name: prometheus
+  hosts: prometheus
+  remote_user: ubuntu
+  become: yes
+#  pre_tasks:
+#  - name: Execute the script for mounting device
+#    script: ../scripts/mount_device.sh
+
+  roles:
+  - java
+  - zookeeper
+  - prometheus
+  - install_env
+  - apache2
+  - filebeat
+  - node-exporter
+
+  vars:
+    service_name            : "prometheus"
+    dns_name_of_server      : "prometheus.a2i.infra"
+    zk_server_id            : '2'
+    env_dns                 : 'a2i.stage'

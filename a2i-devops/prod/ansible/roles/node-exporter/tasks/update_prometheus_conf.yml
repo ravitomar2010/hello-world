@@ -1,0 +1,27 @@
+---
+# - name: prometheus
+#   hosts: prometheus
+#   remote_user: ubuntu
+#   become: yes
+#   tasks:
+#
+#   - name: Get the ip address of the node
+#     command: hostname --ip-address
+#     register: local_ip_address
+#
+#   - name: Print the IP local_ip_address
+#     debug:
+#       var: local_ip_address
+
+# - name: Get the ip address of the node
+#   command: hostname --ip-address
+#   register: local_ip_address
+#   delegate_to: prometheus.a2i.infra
+#
+# - name: Print the IP local_ip_address
+#   debug:
+#     var: local_ip_address
+
+- name: Updating the prometheus configuration file to add this server
+  command: 'ssh -i ~/a2i-infra.pem ubuntu@prometheus.a2i.infra "sudo /root/scripts/update_prometheus_conf/update_prometheus_conf.sh "{{ service_name }}" "{{ dns_name_of_server }}""'
+  delegate_to: localhost

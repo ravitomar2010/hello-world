@@ -1,0 +1,6 @@
+---
+# defaults file for zookeeper
+zk_download_url : 'http://apache.osuosl.org/zookeeper/stable/'
+zk_version      : 'apache-zookeeper-3.5.8-bin'
+zk_server_id    : '1'
+env_dns         : 'a2i.stage'

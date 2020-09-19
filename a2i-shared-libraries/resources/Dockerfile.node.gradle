@@ -1,0 +1,7 @@
+FROM node:10.12-slim
+ENV PORT 3001
+EXPOSE 3001
+WORKDIR /usr/src/app
+COPY . .
+RUN npm install
+CMD ["sh", "-c", "npm run ${PHASE}"]

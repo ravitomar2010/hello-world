@@ -1,0 +1,103 @@
+- name: Fail for unsupported OS
+  fail:
+    msg: Only Debian based Linux supported
+  when: ansible_facts['os_family'] != "Debian"
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Import the public key used by the package management system
+  apt_key: 
+    keyserver: "{{ installation['key_serv'] }}"
+    id: "{{ installation['key'] }}"
+    state: present
+
+
+- name: Add MongoDB repository
+  apt_repository: 
+    repo: "{{ installation['apt_repo'] }}"
+    state: present
+
+- name: Install mongodb
+  apt: 
+    pkg: 
+      - libcurl3
+      - mongodb-org-server 
+      - mongodb-org
+    state: latest 
+    update_cache: yes
+
+- name: Create temporary mongod conf
+  template: 
+    src: mongod_tmp.conf
+    dest: "/etc/mongod.conf"
+    owner: mongodb
+
+#- name: Creates mongodb data directory
+#  file:
+#    path: /data/db
+#    state: directory
+#    owner: mongodb
+#    group: mongodb
+#    mode: 0775
+#    recurse: yes
+    
+- name: Create mongodb service file
+  template: 
+    src: mongodb.service
+    dest: "/etc/systemd/system/mongodb.service"
+    mode: '0600'
+
+- name: Force systemd to reload configs
+  systemd:
+    daemon_reload: yes
+
+- name: start mongodb
+  service: 
+    name: mongod 
+    state: started
+
+- name: Copy the template to create admin user and rs
+  template:
+    src: "{{ item }}"
+    dest: "/tmp/{{ item }}.js"
+  loop:
+    - mongo-script-user
+    - mongo-script-rs
+
+- name: Initialize replicaset
+  shell: /usr/bin/mongo --port "27017" /tmp/mongo-script-rs.js
+
+- name: Create admin user
+  shell: /usr/bin/mongo --port "27017" < /tmp/mongo-script-user.js
+  
+- name: Clean temp files
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /tmp/mongo-script-rs.js
+    - /tmp/mongo-script-user.js
+    - /etc/mongod.conf
+
+- name: Stop mongodb
+  shell: mongod --dbpath /var/lib/mongodb --shutdown
+
+- name: Create mongod conf
+  template: 
+    src: mongod.conf
+    dest: "/etc/mongod.conf"
+    owner: mongodb
+
+- name: Create mongodb keyfile
+  template: 
+    src: mongodb-keyfile
+    dest: "/etc/mongodb-keyfile"
+    mode: '0600'
+    owner: mongodb
+
+- name: Restart mongodb
+  service: 
+    name: mongod 
+    state: restarted

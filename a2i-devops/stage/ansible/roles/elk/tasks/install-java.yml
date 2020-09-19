@@ -1,0 +1,21 @@
+---
+
+# - name: add apt-get repositorires for java 11
+#   shell: "sudo add-apt-repository ppa:openjdk-r/ppa -y"
+#
+# - name: add repo to sources list
+#   shell: "sudo echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/backports.list"
+
+- name: Update apt repo
+  apt:
+    update_cache: yes
+    state: present
+
+- name: Install openjdk 11
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - openjdk-11-jdk

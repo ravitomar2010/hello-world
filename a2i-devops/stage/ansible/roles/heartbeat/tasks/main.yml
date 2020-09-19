@@ -1,0 +1,32 @@
+---
+# tasks file for filebeat
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+    state: present
+
+- name: Copy heartbeat tar file
+  copy:
+    src: ./lib/heartbeat-oss-7.8.0-linux-x86_64.tar.gz
+    dest: /tmp/heartbeat.tar.gz
+    force: no
+    owner: root
+    mode: 0655
+
+- name: Unarchive a file that is already on the remote machine
+  unarchive:
+    src: /tmp/heartbeat.tar.gz
+    dest: /etc/
+    remote_src: yes
+
+- name: Rename heartbeat tar folder
+  shell: "mv /etc/heartbeat-7.8.0-linux-x86_64 /etc/heartbeat"
+
+- name: Create the configuration file
+  template:
+    src: heartbeat.yml
+    dest: /etc/heartbeat/heartbeat.yml
+#
+# - name: To start the filebeat service
+#   shell: "nohup sudo ./filebeat -e -c filebeat.yml &"

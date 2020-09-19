@@ -1,0 +1,25 @@
+---
+- name: jenkins
+  hosts: jenkins
+  remote_user: ubuntu
+  become: yes
+
+  pre_tasks:
+  - name: Execute the script for mounting device
+    script: ../scripts/mount_device.sh
+
+  roles:
+  - install_env
+  - java
+  - jenkins
+  - filebeat
+  - node-exporter
+
+  vars:
+    shared_library_repo: "https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/a2i-shared-libraries"
+    shared_library_name: "hyke-devops-libs"
+    shared_library_default_version: "master"
+    onboard_job_repo: "https://bitbucket.org/axiomtelecom/hyke-simple-service.git"
+    onboard_job_configure_branch: "dev"
+    service_name : "jenkins"
+    dns_name_of_server : "jenkins.a2i.infra"

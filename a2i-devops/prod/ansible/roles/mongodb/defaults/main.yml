@@ -1,0 +1,15 @@
+---
+# vars file for mongodb
+installation:
+  key_serv: hkp://keyserver.ubuntu.com:80
+  key: E52529D4
+  apt_repo: deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse
+  dbpath: /var/lib/mongodb
+is_clustered: true
+replicaset:
+  name: rs0
+adminUser:
+  name: adminUser
+  database: admin
+  password: password
+  roles: clusterAdmin, userAdminAnyDatabase, dbAdminAnyDatabase, readWriteAnyDatabase

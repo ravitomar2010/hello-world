@@ -1,0 +1,22 @@
+---
+- name: nifi_registry
+  hosts: nifi_registry
+  remote_user: ubuntu
+  become: yes
+  pre_tasks:
+  - name: Execute the script for mounting device
+    script: ../scripts/mount_device.sh
+
+  roles:
+  - java
+  - nginx
+  - nifi-toolkit
+  - nifi-registry
+  - install_env
+  - filebeat
+  - node-exporter
+
+  vars:
+    service_name                : "nifi-registry"
+    dns_name_of_server          : "nifi-registry.a2i.infra"
+    nifi_registry_git_user_ssm  : /a2i/git/nifi_registry/passwd

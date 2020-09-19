@@ -1,0 +1,71 @@
+baseaxiomtelecom  None
+baseintsof sameer_shukla, kapil_alawadhi, ravi_tomar, monika_rana
+basetothenew albert_abraham
+batch batch_erp, batch_cf, batch_cvs, batch_dss, batch_om, batch_user, batch_active, batch_estore, batch_stg_axiombi, batch_edi, batch_shipment, batch_demand_forecast, batch_finance, batch_optimiza
+bi naveen, radha, anuj, aymanalshabani, nazeerul, muhammad, cogno_bi, cristina, nidhi_goel, power_bi, yogesh_patil, raj_bhalla, sandeep_sunkavalli
+finance anees
+mstr_axiom nifi_hyke, ravi_tomar, yogesh_patil, nifi_axiom
+mstr_batch_active  None
+mstr_batch_audit_sysmgmt batch_audit_sysmgmt
+mstr_batch_bi batch_bi, anees
+mstr_batch_bi_dbo batch_bi_dbo
+mstr_batch_bi_dimensions batch_bi_dimensions, anees
+mstr_batch_bi_imei batch_bi_imei, anees
+mstr_batch_bi_purchase batch_bi_purchase, anees
+mstr_batch_bi_sales batch_bi_sales, anees
+mstr_batch_bi_stocks batch_bi_stocks, anees
+mstr_batch_campaign batch_campaign
+mstr_batch_cashback batch_cashback
+mstr_batch_cf  None
+mstr_batch_cluster batch_cluster
+mstr_batch_collection batch_collection
+mstr_batch_configuration batch_configuration
+mstr_batch_credit batch_credit
+mstr_batch_cvs  None
+mstr_batch_cvs_reconcile batch_cvs_reconcile
+mstr_batch_dealer batch_dealer
+mstr_batch_delivery batch_delivery
+mstr_batch_demand_forecast  None
+mstr_batch_dss_bi batch_dss_bi
+mstr_batch_dss_sysmgmt batch_dss_sysmgmt
+mstr_batch_edi  None
+mstr_batch_erp  None
+mstr_batch_estore  None
+mstr_batch_finance  None
+mstr_batch_ga batch_ga
+mstr_batch_hyke batch_hyke
+mstr_batch_hyke_bi_model batch_hyke_bi_model
+mstr_batch_hyke_fact_model batch_hyke_fact_model, batch_hyke_bi_model
+mstr_batch_hyke_fact_models  None
+mstr_batch_hykebi batch_hykebi
+mstr_batch_inventory batch_inventory
+mstr_batch_invoice batch_invoice
+mstr_batch_loyalty batch_loyalty
+mstr_batch_om
+mstr_batch_optimiza batch_optimiza
+mstr_batch_order batch_order
+mstr_batch_pms batch_pms
+mstr_batch_ppi batch_ppi
+mstr_batch_pricing batch_pricing
+mstr_batch_sales_return batch_sales_return
+mstr_batch_service batch_service
+mstr_batch_shipment  None
+mstr_batch_stg_axiombi  None
+mstr_batch_stg_hykebi batch_stg_hykebi
+mstr_batch_supplier_visibility batch_supplier_visibility
+mstr_batch_uts batch_uts
+mstr_batch_vanshika_bi_test  None
+mstr_batch_wire_transfer batch_wire_transfer
+mstr_batch_wms batch_wms
+mstr_batch_ygag batch_ygag
+mstr_bi_dbo batch_bi_dbo
+mstr_demand_forecast shorveer
+mstr_hyke yogesh_patil, ravi_tomar
+mstr_optimiza nidhi_goel, batch_optimiza, anees
+read_all_dbo batch_dbo, batch_qa, batch_hykebi
+read_axiom ankit_gupta, raveen_sharma, yogesh_patil, qa
+read_bi_dbo_logistics
+read_finance tm1_portal
+read_intsoft prakhar_gandhi, raj_bhalla, kapil_alawadhi, sameer_shukla, raveen_sharma, ravi_tomar, ankit_gupta, suraj_sharma, sanchi_bansal, varun_gupta, shivali_singla, monika_rana
+read_ttn sandeep_sunkavalli, vanshika, shorveer, albert_abraham
+visualisation raj_bhalla, anees

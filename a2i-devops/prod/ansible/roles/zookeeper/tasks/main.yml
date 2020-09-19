@@ -1,0 +1,75 @@
+---
+- name: Run apt-get update command
+  apt:
+    update-cache: yes
+
+- name: create a directory for zookeeper server
+  file:
+    path: "{{ item }}"
+    mode: '0755'
+    state: directory
+  loop:
+    - "/usr/local/data/zookeeper"
+    - "/usr/local/zookeeper"
+
+- name: Download zookeeper packages
+  get_url:
+    url: "{{ zk_download_url }}{{zk_version}}.tar.gz"
+    dest: "/tmp/"
+    mode: '0777'
+    timeout: 7200
+
+- name: Extract zookeeper packages to /usr/local/zookeeper
+  unarchive:
+    src: "/tmp/{{zk_version}}.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copy zookeeper packages to /usr/local/zookeeper
+  copy:
+    src: "/tmp/{{zk_version}}/"
+    dest: "/usr/local/zookeeper/"
+    remote_src: yes
+
+- name: cleanup
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "/tmp/{{zk_version}}.tar.gz"
+    - "/tmp/{{zk_version}}"
+
+- name: Create my id file for server
+  template:
+    src: "myid.tpl"
+    dest: "/usr/local/data/zookeeper/myid"
+
+- name: Create zoo.cfg file
+  template:
+    src:  "zoo.cfg.tpl"
+    dest: "/usr/local/zookeeper/conf/zoo.cfg"
+
+# - name: Start zookeeper service
+#   command: /usr/local/zookeeper/bin/zkServer.sh start
+#
+
+- name: Copy service file to host
+  template:
+    src: "zk.service.tpl"
+    dest: "/etc/systemd/system/zookeeper.service"
+
+- name: Enable zookeeper service
+  shell: systemctl enable zookeeper
+
+- name: Reload zookeeper service
+  shell: systemctl daemon-reload
+
+- name: Start zookeeper service
+  shell: systemctl start zookeeper
+
+#
+# - name: Enable zookeeper to start on system startup
+#   lineinfile:
+#     path: /etc/systemd/system/zookeeper.service
+#     create: yes
+#     line: '/usr/local/zookeeper/bin/zkServer.sh start'

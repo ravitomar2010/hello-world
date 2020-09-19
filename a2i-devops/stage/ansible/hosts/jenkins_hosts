@@ -1,0 +1,2 @@
+[jenkins]
+10.12.11.53   ansible_ssh_private_key_file=~/a2i-infra.pem

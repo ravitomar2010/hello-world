@@ -1,0 +1,17 @@
+{% if groups['mongodb'][0] == inventory_hostname %}
+use admin;
+db.createUser(
+    { user: "{{ adminUser.name }}", 
+    pwd:"{{ adminUser.password }}", 
+    roles: [  
+        {role: "userAdminAnyDatabase", db: "admin" },
+        { role: "dbAdminAnyDatabase", db: "admin" },  
+        { role: "readWriteAnyDatabase", db:"admin" },  
+        { role: "clusterAdmin",  db: "admin" }
+    ]
+    }
+);
+{% else %}
+sleep(5000)
+{% endif %}
+sleep(2000)

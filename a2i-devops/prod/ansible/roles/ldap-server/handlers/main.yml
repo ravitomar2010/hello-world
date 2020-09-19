@@ -1,0 +1,12 @@
+---
+- name: restart iptables
+  service: name=iptables state=restarted enabled=yes
+
+- name: restart httpd
+  service: name=httpd state=restarted enabled=yes
+
+- name: restart apache2
+  service: name=apache2 state=restarted enabled=yes
+
+- name: restart slapd
+  service: name=slapd state=restarted enabled=yes

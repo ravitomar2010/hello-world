@@ -1,0 +1,130 @@
+---
+# tasks file for grafana
+# - name: Run apt-get update command
+#   apt:
+#     update-cache: yes
+#
+# - name: Install a list of packages
+#   apt:
+#     name: "{{ packages }}"
+#   vars:
+#     packages:
+#     - xz-utils
+#     - sqlite3
+#
+# - name: Download Grafana packages
+#   get_url:
+#     url: "{{ grafana_download_url }}/grafana_{{ grafana_version }}_amd64.deb"
+#     dest: "/tmp/grafana.deb"
+#     mode: '0440'
+#     timeout: 7200
+#
+# - name: Install grafana .deb package
+#   apt:
+#     deb: /tmp/grafana.deb
+#
+- name: Pull ldap bind password from SSM
+  debug: msg="{{ lookup('aws_ssm', '{{ openldap_server_binduserpath_ssm }}' ) }}"
+  register: ldap_bind_passwd
+  delegate_to: localhost
+
+# - name: Edit grafana config
+#   copy:
+#     src: "{{ item }}"
+#     dest: /etc/grafana/
+#     mode: 0640
+#     owner: root
+#     group: grafana
+#   with_items: ['grafana.ini']
+
+- name: Pull grafana root password from SSM for db
+  debug: msg="{{ lookup('aws_ssm', '{{ grafana_server_rootdbuserpath_ssm }}' ) }}"
+  register: grafana_server_db_root_password
+  delegate_to: localhost
+
+- name: Edit Ldap config for grafana
+  template:
+    src: ldap.toml
+    dest: "/etc/grafana/ldap.toml"
+
+#
+# - name: Add existing grafana dashboards
+#   copy:
+#     src: "{{ item.src }}"
+#     dest: /var/lib/grafana/
+#     mode: "{{ item.mode }}"
+#     owner: grafana
+#     group: grafana
+#   with_items:
+#     - { src: 'grafana.db', mode: '0640'}
+#     - { src: 'plugins', mode: '0750'}
+
+# - name: Modify grafana.db file using sqlite
+#   shell: "{{ item }}"
+#   with_items:
+#     - sqlite3 /var/lib/grafana/grafana.db 'delete from user_auth_token;'
+#     - sqlite3 /var/lib/grafana/grafana.db 'delete from user_auth;'
+#     - sqlite3 /var/lib/grafana/grafana.db 'delete from user where login is not "admin";'
+# #    - sqlite3 /var/lib/grafana/grafana.db 'update user set password = "59acf18b94d7eb0694c61e60ce44c110c7a683ac6a8f09580d626f90f4a242000746579358d77dd9e570e83fa24faa88a8a6", salt = "F3FAxVm33R" where login = "admin";'
+#     - sqlite3 /var/lib/grafana/grafana.db 'update user set password = "{{ grafana_server_db_root_password }}" where login = "admin";'
+#     - sqlite3 /var/lib/grafana/grafana.db 'delete from data_source where type like "grafana%";'
+#     - sqlite3 /var/lib/grafana/grafana.db 'update data_source set json_data = "{""assumeRoleArn"":""{{ cloudwatch.assumeRoleARN }}"",""authType"":""{{ cloudwatch.authType }}"",""defaultRegion"":""{{ cloudwatch.defaultRegion }}"",""timeField"":""@timestamp""}" where name LIKE "CloudWatch%";'
+#     - sqlite3 /var/lib/grafana/grafana.db 'update data_source set basic_auth = 0, basic_auth_user = NULL, secure_json_data = "{""basicAuthPassword"":""""}" where name LIKE "Prometheus%";'
+#     - sqlite3 /var/lib/grafana/grafana.db 'update data_source set url = "{{ prometheus_datasource_url }}" where name LIKE "Prometheus%";'
+#     - sqlite3 /var/lib/grafana/grafana.db 'update data_source set url = "{{ elasticsearch_datasource_url }}" where name LIKE "Elasticsearch%";'
+
+- name: Make grafana directory writable
+  file:
+    path: /var/lib/grafana
+    mode: u=rwX,g=rwX,o=rX
+    recurse: yes
+
+- name: ensure grafana is running and enabled
+  service:
+    name: grafana-server
+    state: restarted
+    enabled: yes
+  become: yes
+
+- name: Install pie chart panel
+  command: grafana-cli plugins install grafana-piechart-panel
+  become: yes
+
+- name: Install clock panel
+  command: grafana-cli plugins install grafana-clock-panel
+  become: yes
+
+- name: Install macropower-analytics panel
+  command: grafana-cli plugins install macropower-analytics-panel
+  become: yes
+
+- name: Install michaeldmoore-annunciator panel
+  command: grafana-cli plugins install michaeldmoore-annunciator-panel
+  become: yes
+
+- name: Install farski-blendstat panel
+  command: grafana-cli plugins install farski-blendstat-panel
+  become: yes
+
+- name: Install farski-blendstat panel
+  command: grafana-cli plugins install farski-blendstat-panel
+  become: yes
+
+- name: Install michaeldmoore-multistat panel
+  command: grafana-cli plugins install michaeldmoore-multistat-panel
+  become: yes
+
+- name: Install snuids-trafficlights panel
+  command: grafana-cli plugins install snuids-trafficlights-panel
+  become: yes
+
+- name: Install Percona app
+  command: grafana-cli plugins install percona-percona-app
+  become: yes
+
+- name: ensure grafana is running and enabled
+  service:
+    name: grafana-server
+    state: restarted
+    enabled: yes
+  become: yes

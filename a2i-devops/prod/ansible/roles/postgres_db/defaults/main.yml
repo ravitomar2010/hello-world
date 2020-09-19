@@ -1,0 +1,7 @@
+---
+# defaults file for postgres_db
+postgres_db:
+  username:
+  password:
+  host:
+  db:

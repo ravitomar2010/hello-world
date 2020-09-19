@@ -1,0 +1,141 @@
+#######################################################################
+# Schemas
+#######################################################################
+
+include         /etc/ldap/schema/core.schema
+include         /etc/ldap/schema/cosine.schema
+include         /etc/ldap/schema/inetorgperson.schema
+include         /etc/ldap/schema/nis.schema
+
+# Where the pid file is put. The init.d script will not stop the
+# server if you change this.
+pidfile         /var/run/slapd/slapd.pid
+
+# List of arguments that were passed to the server
+argsfile        /var/run/slapd/slapd.args
+
+loglevel        none
+
+
+#######################################################################
+# Modules
+#######################################################################
+
+modulepath      /usr/lib/ldap
+moduleload      back_bdb.la
+moduleload      memberof.la
+moduleload      back_monitor
+moduleload      ppolicy.la
+
+
+#######################################################################
+#  Access Control List. Used for LDAP Super Users.
+#######################################################################
+
+access to *
+                by self write
+                by dn.base="cn=admin,{{ openldap_server_base_dn }}" write
+                by * read
+access to attrs=userPassword
+                by self write
+                by anonymous auth
+                by dn.base="cn=admin,{{ openldap_server_base_dn }}" write
+                by * none
+access to attrs=shadowLastChange
+                by self write
+                by * read
+
+
+#######################################################################
+#  Access Control List. Used for LDAP bind.
+#######################################################################
+
+# Allow users to change their own passwords  forwarding addresses.
+access to attrs="userPassword"
+    by anonymous    auth
+    by self         write
+    by dn.exact="uid=ldap,{{ openldap_server_base_dn }}"   read
+    by dn.exact="uid=ldapadmin,{{ openldap_server_base_dn }}"  write
+    by users        none
+
+# Allow to read others public info.
+access to attrs="cn,sn,gn,givenName,telephoneNumber"
+    by anonymous    auth
+    by self         write
+    by dn.exact="uid=ldap,{{ openldap_server_base_dn }}"   read
+    by dn.exact="uid=ldapadmin,{{ openldap_server_base_dn }}"  write
+    by users        read
+
+# User attrs.
+access to attrs="objectClass,shadowFlag,shadowMin,shadowMax,shadowWarning,shadowInactive,shadowExpire,uid,loginShell,gidNumber,uidNumber,homeDirectory"
+    by anonymous    auth
+    by self         read
+    by dn.exact="uid=ldap,{{ openldap_server_base_dn }}"   read
+    by dn.exact="uid=ldapadmin,{{ openldap_server_base_dn }}"  write
+    by users        read
+
+access to dn="cn=monitor"
+    by dn.exact="uid=ldap,{{ openldap_server_base_dn }}"   read
+    by dn.exact="uid=ldapadmin,{{ openldap_server_base_dn }}"  read
+    by *        none
+
+
+#######################################################################
+#  Access Control List. Used for LDAP Admins.
+#######################################################################
+
+
+access to dn="uid=ldap,{{ openldap_server_base_dn }}"
+    by anonymous                    auth
+    by self                         write
+    by dn.exact="uid=ldapadmin,{{ openldap_server_base_dn }}"  write
+    by users                        none
+
+access to dn="uid=ldapadmin,{{ openldap_server_base_dn }}"
+    by anonymous                    auth
+    by self                         write
+    by users                        none
+
+access to *
+    by anonymous                    auth
+    by dn.exact="uid=ldapadmin,{{ openldap_server_base_dn }}"  write
+    by users                        read
+
+#
+# Grant correct privileges to ldap/ldapadmin.
+#
+
+access to dn.subtree="ou=Users,{{ openldap_server_base_dn }}"
+    by anonymous                    auth
+    by self                         write
+    by dn.exact="cn=ldap,{{ openldap_server_base_dn }}"   read
+    by dn.exact="cn=ldapadmin,{{ openldap_server_base_dn }}"  write
+    by users                        none
+
+
+#######################################################################
+# BDB database definitions
+#######################################################################
+
+database        bdb
+suffix          "{{ openldap_server_base_dn }}"
+rootdn          "cn=admin,{{ openldap_server_base_dn }}"
+rootpw          {{ root_password.stdout }}
+
+#This directory has to be created and would contain the ldap database.
+directory       /var/lib/ldap/{{ openldap_server_domain_name }}/
+
+index objectClass                       eq,pres
+index ou,cn,mail,surname,givenname      eq,pres,sub
+index uidNumber,gidNumber,loginShell    eq,pres
+index uid,memberUid                     eq,pres,sub
+index nisMapName,nisMapEntry            eq,pres,sub
+
+
+#######################################################################
+# Certificates
+#######################################################################
+
+#TLSCACertificateFile /etc/ldap/certs/cacert.pem
+TLSCertificateFile /etc/ldap/certs/cert.crt
+TLSCertificateKeyFile /etc/ldap/certs/my.key

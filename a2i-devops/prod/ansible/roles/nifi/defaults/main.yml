@@ -1,0 +1,35 @@
+---
+# defaults file for nifi
+nifi_version: 1.11.0
+nifi_download_url: http://www-eu.apache.org/dist/nifi
+# nifi:
+#   hostname: localhost
+# ldap related variables
+# ldap:
+#   manager_dn: uid=ldap,dc=hyke,dc=ai
+#   manager_passwd:
+#   url: ldap://ldap.hyke.tech:389
+#   user_search_base: ou=users,dc=hyke,dc=ai
+#   user_filter: uid={0}
+#   group_search_base: ou=groups,dc=hyke,dc=ai
+#   node_identity: nifi-dev-a2i.hyke.ai
+#   node_identity_cn: cn=*.atg.local,dc=atgdmap,dc=stage
+#   initial_admin_id: yogesh.patil
+ssl:
+  keystore_passwd: Twi9mn5x8Th0/jh7iyKUoKuN2qFM7zgJPvrIA58DDUc
+  key_passwd: Twi9mn5x8Th0/jh7iyKUoKuN2qFM7zgJPvrIA58DDUc
+  trust_store_passwd: efqHmlf8rfl+S9qgDlCT4KEnaQnbgND9uLBAECBHFio
+openldap_server_binduserpath_ssm : "/a2i/infra/ldap/bindpwd"
+openldap_server_base_dn: "dc=a2i,dc=infra"
+tls_toolkit_secret_ssm: "/a2i/infra/nifi_toolkit/tlssecret"
+ca_server_hostname: "ca-server.a2i.infra"
+
+
+# defaults file for nifi-tollkit
+nifi_toolkit_version: 1.11.0
+nifi_toolkit_download_url: https://archive.apache.org/dist/nifi
+nifi_toolkit_secret: SueproGAEKJAF
+nifi_toolkit_port: 9999
+is_ca_server : false
+tls_toolkit_secret_ssm: /a2i/infra/nifi_toolkit/tlssecret
+ca_server_dn :  "ca-server.a2i.infra"

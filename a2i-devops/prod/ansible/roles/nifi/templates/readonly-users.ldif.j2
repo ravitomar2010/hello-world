@@ -1,0 +1,7 @@
+dn: cn={{ nifi_user }},{{ openldap_server_base_dn }}
+cn: {{ nifi_user }}
+objectclass: inetOrgPerson
+objectclass: top
+sn: User
+uid: {{ nifi_user }}
+userpassword: {{ ro_userpw.stdout }}

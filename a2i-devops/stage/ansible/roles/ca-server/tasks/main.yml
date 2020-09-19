@@ -1,0 +1,17 @@
+---
+- name: Run apt-get update command
+  apt:
+    update-cache: yes
+
+- name: Check if tls-toolkit exists
+  stat:
+    path: /Users/local/nifi-toolkit/bin/tls-toolkit.sh
+  register: file_details
+
+- name : Print whether directory exists
+  debug:
+    var: file_details.stat.exists
+
+- name: Install tls-tollkit if doesnt exists
+  import_tasks:
+  when: (isnifiprocessrunning.stdout <= "0")  and (file_details.stat.exists == false)

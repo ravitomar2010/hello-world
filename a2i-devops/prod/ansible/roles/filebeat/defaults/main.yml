@@ -1,0 +1,13 @@
+---
+# defaults file for filebeat
+
+filebeat:
+  version: 7.4.0-amd64.deb
+  download_url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-{{ filebeat.version }}"
+  index_pattern:
+  log_files:
+    - /var/log/*
+  elastic_host: elastic:9200
+  elastic_user: user
+  elastic_password: password
+  elastic_protocol: http

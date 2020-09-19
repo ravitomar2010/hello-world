@@ -1,0 +1,3 @@
+---
+- import_tasks: install_node_exporter.yml
+- import_tasks: update_prometheus_conf.yml

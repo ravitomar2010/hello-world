@@ -1,0 +1,39 @@
+---
+# tasks file for postgres_db
+
+- name: add universe repository for bionic
+  apt_repository: 
+    repo: deb http://archive.ubuntu.com/ubuntu bionic universe
+    state: present
+
+- name: install pip
+  apt:
+    pkg:
+    - python
+    - python-setuptools
+    - virtualenv
+    - libpq-dev
+    - python-psycopg2
+
+- name: install python-pip
+  apt:
+    pkg:
+    - python-pip
+
+- name: "Install python libraries"
+  pip:
+    name: 
+    - psycopg2-binary
+    - psycopg2
+    - virtualenv
+    state: latest
+    virtualenv: /opt/deploy
+    virtualenv_site_packages: yes
+
+- name: Create a new database
+  postgresql_db:
+    name: "{{ item }}"
+    login_password:  "{{ postgres_db.password }}"
+    login_user: "{{ postgres_db.username }}"
+    login_host: "{{ postgres_db.host }}"
+  loop: "{{ postgres_db.db }}"

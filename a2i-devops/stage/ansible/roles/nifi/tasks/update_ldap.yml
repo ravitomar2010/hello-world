@@ -1,0 +1,12 @@
+---
+
+- name: Pull ldap root password from SSM
+  debug: msg="{{ lookup('aws_ssm', '{{ openldap_server_rootuserpath_ssm }}' ) }}"
+  register: openldap_server_rootpw
+  delegate_to: localhost
+
+- name: Adding ldap entries as per template files
+  shell: >
+    ldapadd -x -c -H ldap://ldap.a2i.infra:389 -D "cn=admin,{{ openldap_server_base_dn }}" -w {{ openldap_server_rootpw.msg }} -f '/tmp/{{ item }}'
+  with_items:
+    - readonly-users.ldif.j2

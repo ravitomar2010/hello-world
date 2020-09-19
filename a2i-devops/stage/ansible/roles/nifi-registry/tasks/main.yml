@@ -1,0 +1,71 @@
+---
+# tasks file for nifi-registry
+
+- name: Update the hostname of the localhost
+  command: hostname {{dns_name_of_server}}
+
+- name: Delete the /etc/hostname file
+  file:
+    path: /etc/hostname
+    state: absent
+
+- name: Update the /etc/hostname file
+  lineinfile:
+    path: /etc/hostname
+    create: yes
+    line: '{{ dns_name_of_server }}'
+
+# - name: 'Install openjdk 8'
+#   apt:
+#     name: "{{ packages }}"
+#   vars:
+#     packages:
+#     - openjdk-8-jdk
+
+- name: Download nifi registry packages
+  get_url:
+    url: "{{ nifi_registry_download_url }}"
+    dest: "/tmp/{{ item }}.tar.gz"
+    mode: '0777'
+    timeout: 7200
+  loop:
+    - "nifi-registry-{{ nifi_registry_version }}-bin"
+
+- name: Extract nifi packages to /usr/local/
+  unarchive:
+    src: "/tmp/{{ item }}"
+    dest: /usr/local/
+    remote_src: yes
+  loop:
+    - "nifi-registry-{{ nifi_registry_version }}-bin.tar.gz"
+
+- name: Rename nifi directories
+  shell: "mv /usr/local/nifi-registry-{{ nifi_registry_version }}* /usr/local/nifi-registry || :"
+
+- name: Import git Password for nifi User from SSM
+  debug: msg="{{ lookup('aws_ssm', '{{ nifi_registry_git_user_ssm }}' ) }}"
+  register: nifi_registry_git_password
+  delegate_to: localhost
+
+- name: Clone existing repositories from git
+  shell: "cd /usr/local/nifi-registry/; git clone https://{{ nifi_registry.git_user }}:{{ nifi_registry_git_password.msg }}@github.com/axiom-telecom/a2i-data-nifi.git"
+
+- name: Create the configuration file from templates files
+  template:
+    src: "{{ item }}"
+    dest: "/usr/local/nifi-registry/conf/{{item}}"
+  loop:
+    - nifi-registry.properties
+    - providers.xml
+
+- name: Install nifi-registry service
+  shell: "/usr/local/nifi-registry/bin/nifi-registry.sh install"
+
+- name: Reload systemctl
+  systemd:
+    daemon_reload: yes
+
+- name: Start nifi-registry
+  service:
+    name: nifi-registry
+    state: restarted

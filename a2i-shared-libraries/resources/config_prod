@@ -1,0 +1,28 @@
+apiVersion: v1
+preferences: {}
+kind: Config
+
+clusters:
+- cluster:
+    server: https://2FB4EE5ADF2808B43D02E107CD2B62A6.yl4.eu-west-1.eks.amazonaws.com
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRFNU1USXdNakExTURBeU0xb1hEVEk1TVRFeU9UQTFNREF5TTFvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBUENHCnhrTThWTDdlTDRxN1dmS2tDV1BmK2JyL1hyajRwaytVQ0Vpc3JpOFg3cmFVdGswbE5tZDZ0b0VvY3V0WktDMzgKNUNrV0xSTTMrbnF4REZXK1RCMUhFTHpLMGFsUHYxNGNMSVdCSFZWYVVMVGNiZ1JacnBDZUV5UUNJbnJMUEYwMQp6ckxXS2tJLzV5bHJLVUYvV3hEUENNejgwcHlpS0QwanlSNnp4aFRvSGdUc1hlVFBRRnNPOS9PRklnNWRkNU00CjNjRFYwRmlmaWE1YmtndXJ6SENLSk5kNG9nS2VDbWNTbFR6VWlWNEhFcXQ5bG9RWHlHaUI3bHRNL3RsakF2MWEKTDg4SkNMdDJEWFdvaW9uVzRKd282UzVhcDUveGQzL09xTnpLYy9pVEFWL0FQVEpMOWVsY1VGMEh1UkRuKzdNLwprVXh3aGNFbmlzMlhCVWMvaVdNQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFDaW4wMFlKUXIzdk9JNk1ubExSZHJyKzhuU3AKd05EM0ZTRElZUUNmcXRIamZSUmVTOEpXYlUvdWJoelo1QW9DdDdoaC92Z3ZWWmxVdlIyY0ZzbDFvZmRDcmtIYQpvQWFLUmdSeWw2OWovcjQzNi9mMmlzZFZ6QjMwM1Z5MzRUanM2N1dmVi9DK2o2amVENVJQWmE0a2tNRWlVd25BCnd0aUVkdE9vbGQvTC9yWTRzKzNRempDWUpyWldkOXYwSi9FaFpLdGptSkZzcnhXVFp4RmMzTjI3cnNPQ043MkIKZFp6VmhhUGhNTUtQbWxqdThlQ0tTWGpSeEp6WUt4MFBFSTNIV0dCVmhDZENkcHVCS1NQVEVCNkJPdkFRcW5UUwpPeFZBUGM2eTNFNWZoRkdrcGhkNC9sbHVvcEtERVZMVFhRVnlYNDUrWjVzRDQwdkwwbG1yaS9keHBlcz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  name: eks_hyke-eks-cluster-production
+
+contexts:
+- context:
+    cluster: eks_hyke-eks-cluster-production
+    user: eks_hyke-eks-cluster-production
+  name: eks_hyke-eks-cluster-production
+
+current-context: eks_hyke-eks-cluster-production
+
+users:
+- name: eks_hyke-eks-cluster-production
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      command: aws-iam-authenticator
+      args:
+        - "token"
+        - "-i"
+        - "hyke-eks-cluster-production"

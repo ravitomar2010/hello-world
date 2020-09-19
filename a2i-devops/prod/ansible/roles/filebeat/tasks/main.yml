@@ -1,0 +1,21 @@
+---
+# tasks file for filebeat
+- name: Fail for unsupported OS
+  fail:
+    msg: Only Debian based Linux supported
+  when: ansible_facts['os_family'] != "Debian"
+
+- name: Install a .deb package from the internet.
+  apt:
+    deb: "{{ filebeat.download_url }}"
+
+- name: Create the configuration file
+  template: 
+    src: filebeat.yml
+    dest: /et/filebeat/filebeat.yml
+
+- name: start the filebeat service
+  service:
+    name: filebeat
+    state: started
+    enabled: yes

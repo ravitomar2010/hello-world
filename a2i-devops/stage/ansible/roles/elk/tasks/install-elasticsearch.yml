@@ -1,0 +1,88 @@
+---
+
+- name: Install necessary packages like unzip and apt-transport-https
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - unzip
+    - apt-transport-https
+
+- name: Download and add signing keys for the repositories
+  shell: "wget -qO - https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch | sudo apt-key add -"
+
+- name: Add the repositories
+  shell: 'echo "deb https://d3g5vo6xdbdb9a.cloudfront.net/apt stable main" | sudo tee -a   /etc/apt/sources.list.d/opendistroforelasticsearch.list'
+
+- name: Download Elasticsearch OSS
+  shell: "wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-7.7.0-amd64.deb"
+
+- name: Install Elasticsearch OSS
+  shell: "dpkg -i elasticsearch-oss-7.7.0-amd64.deb"
+  become: true
+
+- name: Update apt repo
+  apt:
+    update_cache: yes
+    state: present
+
+- name: Install the latest version of Open Distro for Elasticsearch
+  shell: "apt install opendistroforelasticsearch -y"
+  become: true
+
+- name: Creates a directory for elasticsearch data
+  file:
+    path: /data/var/lib/elasticsearch
+    state: directory
+    owner: root
+    group: elasticsearch
+    mode: '777'
+
+- name: setup permissions for data directory
+  shell: "chmod 777 -R /data"
+  become: true
+
+- name: Change the elasticsearch properties value
+  lineinfile:
+    dest: /etc/elasticsearch/elasticsearch.yml
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^#node.name: node-1', line: 'node.name: masternode' }
+    - { regexp: '^path.data: /var/lib/elasticsearch', line: 'path.data: /data/var/lib/elasticsearch' }
+    - { regexp: '^#network.host: 192.168.0.1', line: 'network.host: 0.0.0.0' }
+    - { regexp: '^#cluster.name: my-application', line: 'cluster.name: a2i-elk' }
+
+- name: Add custom configurations comment in conf file
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: '########## Custom configurations ##########'
+    insertbefore: '######## End OpenDistro for Elasticsearch Security Demo Configuration ########'
+
+- name: Change the seed_hosts , initial_master_nodes for elasticsearch properties value
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: 'discovery.seed_hosts: ["masternode"]'
+    insertafter: '########## Custom configurations ##########'
+
+- name: Change the initial_master_nodes for elasticsearch properties value
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: 'cluster.initial_master_nodes: ["masternode"]'
+    insertafter: '########## Custom configurations ##########'
+
+- name: Reload daemons
+  shell: "/bin/systemctl daemon-reload"
+  become: true
+
+- name: Enable elasticsearch service
+  service:
+    name: elasticsearch.service
+    enabled: yes
+
+- name: Start elasticsearch service
+  service:
+    name: elasticsearch.service
+    state: started

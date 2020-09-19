@@ -1,0 +1,11 @@
+---
+- name: zookeeper
+  hosts: zk_hosts
+  remote_user: ubuntu
+  become: yes
+  # pre_tasks:
+  # - name: Execute the script for mounting device
+  #   script: ../scripts/mount_device.sh
+
+  roles:
+  - zookeeper
