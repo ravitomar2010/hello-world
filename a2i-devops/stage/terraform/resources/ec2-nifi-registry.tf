@@ -14,14 +14,14 @@ module "nifi_registry_security_group" {
       to_port     = 22
       protocol    = "tcp"
       description = "Ingress for SSH to nifi from within A2i"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 0
       to_port     = 0
       protocol    = "-1"
       description = "Allowed all traffic from workstation"
-      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr}"
+      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
   ]
   egress_rules        = ["all-all"]

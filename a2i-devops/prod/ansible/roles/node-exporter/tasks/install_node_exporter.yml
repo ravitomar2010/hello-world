@@ -55,9 +55,9 @@
 #   with_items:
 #     - /usr/local/bin/node-exporter
 
-- name: reload daemon
+- name: reload node-exporter daemon
   shell: systemctl daemon-reload
-
+  
 - name: start node-exporter service
   systemd:
     state: started

@@ -11,7 +11,7 @@ def call() {
 				when { anyOf { branch 'master'} }
 				steps{
 					sh """
-						ls -ltr
+												ls -ltr
                         zip -r lambda-layer.zip . -x *.git*
 					"""
 				}
@@ -23,7 +23,7 @@ def call() {
 					sh """
 							echo "Size of the compressed layer file is "
 							du -sh ./lambda-layer.zip
-					    aws lambda publish-layer-version --layer-name ${APP_NAME} --compatible-runtimes '["python3.6","python3.7"]' --zip-file fileb://lambda-layer.zip --region eu-west-1 --profile prod
+					    aws lambda publish-layer-version --layer-name ${APP_NAME} --compatible-runtimes '["python3.6","python3.7","python3.8"]' --zip-file fileb://lambda-layer.zip --region eu-west-1 --profile prod
 					"""
 				}
 			}
@@ -31,7 +31,7 @@ def call() {
 				when { anyOf { branch 'developer'} }
 				steps{
 					sh """
-						ls -ltr
+												ls -ltr
                         zip -r lambda-layer.zip . -x *.git*
 					"""
 				}
@@ -41,7 +41,7 @@ def call() {
 				when { anyOf { branch 'developer'} }
 				steps {
 					sh """
-					    aws lambda publish-layer-version --layer-name ${APP_NAME} --compatible-runtimes '["python3.6","python3.7"]' --zip-file fileb://lambda-layer.zip --region eu-west-1 --profile stage
+					    aws lambda publish-layer-version --layer-name ${APP_NAME} --compatible-runtimes '["python3.6","python3.7","python3.8"]' --zip-file fileb://lambda-layer.zip --region eu-west-1 --profile stage
 					"""
 				}
 			}

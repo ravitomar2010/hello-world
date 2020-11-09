@@ -15,7 +15,7 @@ module "infra_tools_security_group" {
       to_port     = 0
       protocol    = "-1"
       description = "Allowed all traffic from workstation"
-      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr}"
+      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
   ]
   egress_rules        = ["all-all"]

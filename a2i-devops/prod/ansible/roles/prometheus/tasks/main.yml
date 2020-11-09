@@ -117,7 +117,7 @@
 - name: Get value of ansible directory
   debug: msg="{{  playbook_dir.split("/")[0:-1]|join("/") }}"
   register: ansible_home_dir
-  
+
 - name: Copy prometheus update script file to scripts location
   copy:
     src: "{{ ansible_home_dir.msg }}/scripts/update_prometheus_conf.sh"
@@ -129,7 +129,6 @@
     src: "../templates/prometheus.yml.tpl"
     dest: "~/scripts/update_prometheus_conf/"
     mode: '1700'
-
 
 - name: Print value of ansible directory
   debug:

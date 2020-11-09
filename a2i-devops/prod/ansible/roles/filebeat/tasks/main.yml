@@ -1,21 +1,41 @@
 ---
-# tasks file for filebeat
-- name: Fail for unsupported OS
-  fail:
-    msg: Only Debian based Linux supported
-  when: ansible_facts['os_family'] != "Debian"
+# tasks file for filebeat setup
 
-- name: Install a .deb package from the internet.
-  apt:
-    deb: "{{ filebeat.download_url }}"
+- name: Create temp supporting directories on remote
+  file:
+    path: /etc/filebeat-temp/
+    state: directory
 
-- name: Create the configuration file
-  template: 
+- name: Copy filebeat binaries to remote host
+  copy:
+    src: "./binaries/filebeat-oss.tar.gz"
+    dest: /etc/filebeat-temp/
+    mode: '1440'
+
+- name: Create supporting directories on remote
+  file:
+    path: /etc/filebeat/
+    state: directory
+
+- name: Extracting the filebeat binary files to temp directory
+  unarchive:
+    src: "/etc/filebeat-temp/filebeat-oss.tar.gz"
+    dest: "/etc/filebeat-temp/"
+    remote_src: yes
+
+- name: Copy filebeat binary files to /etc/filebeat location
+  copy:
+    src: "/etc/filebeat-temp/filebeat-7.9.2-linux-x86_64/"
+    dest: "/etc/filebeat/"
+    remote_src: yes
+    directory_mode: yes
+
+- name: Copy reference filebeat.yml
+  template:
     src: filebeat.yml
-    dest: /et/filebeat/filebeat.yml
+    dest: "/etc/filebeat/filebeat.yml"
 
-- name: start the filebeat service
-  service:
-    name: filebeat
-    state: started
-    enabled: yes
+- name: Clean-up
+  file:
+    state: absent
+    path: "/etc/filebeat-temp/"

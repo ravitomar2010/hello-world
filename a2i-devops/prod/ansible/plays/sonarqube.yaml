@@ -1,0 +1,16 @@
+---
+- name: sonarqube
+  hosts: sonarqube
+  remote_user: ubuntu
+  become: yes
+
+  # pre_tasks:
+  # - name: Execute the script for mounting device
+  #   script: ../scripts/linkpython.sh
+
+  roles:
+  - sonar-qube
+
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3

@@ -15,7 +15,7 @@ module "grafana_security_group" {
       to_port     = 0
       protocol    = "-1"
       description = "Allowed all traffic from workstation"
-      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr},${var.office_cidr}"
+      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr},${var.office_cidr},${var.old_prod_cidr}"
     },
   ]
   egress_rules        = ["all-all"]
@@ -86,9 +86,14 @@ resource "aws_iam_role" "grafana_role" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "grafana_attach" {
+resource "aws_iam_role_policy_attachment" "grafana_attach_ec2" {
   role       = "${aws_iam_role.grafana_role.name}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "grafana_attach_s3" {
+  role       = "${aws_iam_role.grafana_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 ############################## Ansible ####################################

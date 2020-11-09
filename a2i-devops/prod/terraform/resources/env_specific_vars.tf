@@ -4,8 +4,13 @@ locals {
       transit_gateway_id = "tgw-022cabd543efb2c4b"
       vpc_cidr = "10.11.0.0/16"
       ec2 = {
-        emr = {
-          type = "t3.large"
+        hadoop = {
+          type = "t3.xlarge"
+          service_name = "hadoop"
+        }
+        data-application = {
+          type = "t2.micro"
+          service_name = "data-application"
         }
         elasticsearch = {
           count = 1

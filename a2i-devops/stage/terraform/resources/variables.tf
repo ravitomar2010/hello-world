@@ -59,6 +59,10 @@ variable "office_cidr" {
 }
 variable "prod_cidr" {
   description = "CIDR used by office local network to allow traffic without VPN"
+  default     = "10.11.0.0/16"
+}
+variable "old_prod_cidr" {
+  description = "CIDR used by office local network to allow traffic without VPN"
   default     = "10.10.0.0/16"
 }
 variable "stage_cidr" {

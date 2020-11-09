@@ -1,0 +1,19 @@
+[Unit]
+Description=Airflow webserver daemon
+After=network.target postgresql.service mysql.service redis.service rabbitmq-server.service
+Wants=postgresql.service mysql.service redis.service rabbitmq-server.service
+
+[Service]
+EnvironmentFile=/root/airflow/airflow.env
+User=airflow
+Group=airflow
+Type=simple
+ExecStart=/bin/bash -c 'source /home/user/anaconda3/etc/profile.d/conda.sh; \
+    conda activate ENV; \
+    airflow webserver'
+Restart=on-failure
+RestartSec=5s
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

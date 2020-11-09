@@ -6,6 +6,7 @@
 
   roles:
   - ldap-agent
+  - file-beat
   - node-exporter
 
   vars:

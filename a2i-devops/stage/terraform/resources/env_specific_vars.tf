@@ -114,13 +114,14 @@ locals {
           env_dns       = "a2i.stage"
         }
         jenkins = {
-          type                            = "t3.large"
+          type                            = "t3.xlarge"
           shared_library_repo             = "https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/a2i-shared-libraries"
           shared_library_name             = "hyke-devops-libs"
           shared_library_default_version  = "master"
           onboard_job_repo                = "https://bitbucket.org/axiomtelecom/hyke-simple-service.git"
           onboard_job_configure_branch    = "dev"
           service_name                    = "jenkins"
+          extraEBSsize                    = 50
         }
         ldap_server = {
           type                              = "t3.micro"

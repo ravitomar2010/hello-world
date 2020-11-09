@@ -68,3 +68,9 @@
 
 - name: Add $HOME/bin to PATH environment variable
   shell: "echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc"
+
+- name: Install default jre version on ubuntu
+  shell: "sudo apt-get install default-jre -y"
+
+- name: Install default jdk version on ubuntu
+  shell: "sudo apt-get install default-jdk -y"

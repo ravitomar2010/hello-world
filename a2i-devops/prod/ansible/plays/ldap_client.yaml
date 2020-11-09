@@ -1,0 +1,12 @@
+---
+- name: ldap_agent
+  hosts: ldap_agent
+  remote_user: ubuntu
+  become: yes
+
+  pre_tasks:
+  - name: Execute the script for mounting device
+    script: ../scripts/linkpython.sh
+
+  roles:
+  - ldap-agent

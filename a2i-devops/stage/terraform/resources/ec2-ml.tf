@@ -16,7 +16,7 @@ module "ml_security_group" {
       to_port     = 0
       protocol    = "-1"
       description = "Allowed all traffic from workstation"
-      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr},${var.office_cidr}"
+      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr},${var.office_cidr},${var.old_prod_cidr}"
     },
   ]
   egress_rules        = ["all-all"]
@@ -43,10 +43,11 @@ module "ml" {
   iam_instance_profile        = "${aws_iam_instance_profile.ml_profile.name}"
 
   tags                        =  {
-                                      "Environment"     = local.environment
-                                      "Application"     = "ml"
-                                      "Name"            = "${var.platform}-ml-${local.environment}"
-                                      "auto-stop-start" = "false"
+                                      "Environment"           = local.environment
+                                      "Application"           = "ml"
+                                      "Name"                  = "${var.platform}-ml-${local.environment}"
+                                      "auto-stop-start"       = "false"
+                                      "office-hours-instance" = "true"
                                  }
 }
 ############################## ########### ####################################

@@ -1,0 +1,17 @@
+---
+- name: hadoop
+  hosts: hadoop
+  remote_user: ubuntu
+  become: yes
+
+  pre_tasks:
+  - name: Execute the script for mounting device
+    script: ../scripts/mount_device.sh
+
+  roles:
+  - ldap-agent
+  - node-exporter
+
+  vars:
+    service_name : "hadoop"
+    dns_name_of_server : "hadoop.a2i.prod"

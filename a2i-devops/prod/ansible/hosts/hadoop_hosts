@@ -1,0 +1,2 @@
+[hadoop]
+10.11.6.164   ansible_ssh_private_key_file=~/a2i-prod.pem

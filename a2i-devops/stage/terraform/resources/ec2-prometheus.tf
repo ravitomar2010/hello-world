@@ -14,28 +14,28 @@ module "prometheus_security_group" {
       to_port     = 8080
       protocol    = "tcp"
       description = "Ingress for Elastic API port from withing VPC"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 9090
       to_port     = 9095
       protocol    = "tcp"
       description = "Ingress for prometheus server services within VPC"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 9100
       to_port     = 9600
       protocol    = "tcp"
       description = "Ingress for exporter server services within VPC"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
       description = "Ingress for SSH to prometheus from within A2i"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 0

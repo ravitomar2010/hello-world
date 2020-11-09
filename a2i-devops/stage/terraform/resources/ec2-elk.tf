@@ -14,21 +14,21 @@ module "elk_security_group" {
       to_port     = 9200
       protocol    = "tcp"
       description = "Ingress for Elastic API port  within VPC"
-      cidr_blocks = "${var.stage_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.stage_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 9300
       to_port     = 9300
       protocol    = "tcp"
       description = "Ingress for Elastic node communication port  within VPC"
-      cidr_blocks = "${var.stage_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.stage_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 5601
       to_port     = 5601
       protocol    = "tcp"
       description = "Ingress for Elastic node communication port  within VPC"
-      cidr_blocks = "${var.stage_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.stage_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 0
@@ -57,13 +57,14 @@ module "elk" {
   subnet_id                   = tolist(module.vpc.infra_subnets)[0]
   vpc_security_group_ids      = [module.elk_security_group.this_security_group_id]
   iam_instance_profile        = "${aws_iam_instance_profile.elastic_profile.name}"
-  tags = {
-    "environment"     = "infra"
-    "platform"        = "ubuntu"
-    "application"     = "elk"
-    "name"            = "${var.platform}-elastic"
-    "auto-stop-start" = "false"
-  }
+  tags                        = {
+                                      "environment"           = "infra"
+                                      "platform"              = "ubuntu"
+                                      "application"           = "elk"
+                                      "name"                  = "${var.platform}-elastic"
+                                      "auto-stop-start"       = "false"
+                                      "office-hours-instance" = "true"
+                                }
 }
 
 ############################## EBS Volumes ####################################

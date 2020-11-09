@@ -180,9 +180,7 @@ resource "aws_route" "route_for_hyke-stage_for_infra" {
   depends_on                = [module.vpc]
 }
 
-
-
-### Existing  Prod Routes
+### A2i  Prod Routes
 resource "aws_route" "route_for_existing_prod_for_public" {
   route_table_id            = module.vpc.public_route_table_ids[0]
   destination_cidr_block    = "10.10.0.0/16"
@@ -200,6 +198,28 @@ resource "aws_route" "route_for_existing_prod_for_private" {
 resource "aws_route" "route_for_existing_prod_for_infra" {
   route_table_id            = module.vpc.infra_route_table_ids[0]
   destination_cidr_block    = "10.10.0.0/16"
+  transit_gateway_id        = local.variables[terraform.workspace].transit_gateway_id
+  depends_on                = [module.vpc]
+}
+
+### A2i  Prod Routes - New
+resource "aws_route" "route_for_a2i_prod_for_public" {
+  route_table_id            = module.vpc.public_route_table_ids[0]
+  destination_cidr_block    = "10.11.0.0/16"
+  transit_gateway_id        = local.variables[terraform.workspace].transit_gateway_id
+  depends_on                = [module.vpc]
+}
+
+resource "aws_route" "route_for_a2i_prod_for_private" {
+  route_table_id            = module.vpc.private_route_table_ids[0]
+  destination_cidr_block    = "10.11.0.0/16"
+  transit_gateway_id        = local.variables[terraform.workspace].transit_gateway_id
+  depends_on                = [module.vpc]
+}
+
+resource "aws_route" "route_for_a2i_prod_for_infra" {
+  route_table_id            = module.vpc.infra_route_table_ids[0]
+  destination_cidr_block    = "10.11.0.0/16"
   transit_gateway_id        = local.variables[terraform.workspace].transit_gateway_id
   depends_on                = [module.vpc]
 }

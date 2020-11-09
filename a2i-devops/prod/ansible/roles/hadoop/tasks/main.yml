@@ -1,0 +1,10 @@
+---
+# tasks file for filebeat setup
+
+- name: Copy sqoop binaries to remote hadoop server
+  copy:
+    src: "./binaries/*.jar"
+    dest: /usr/lib/sqoop/lib/
+    owner: hadoop
+    group: hadoop
+    mode: '0644'

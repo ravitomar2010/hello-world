@@ -142,7 +142,7 @@ resource "aws_route" "route_for_hyke-stage_for_private" {
   depends_on                = [module.vpc]
 }
 
-### A2i Prod Routes
+### A2i Prod-old Route
 resource "aws_route" "route_for_existing_prod_for_public" {
   route_table_id            = module.vpc.public_route_table_ids[0]
   destination_cidr_block    = "10.10.0.0/16"

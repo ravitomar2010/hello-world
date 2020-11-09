@@ -1,0 +1,2 @@
+[data-application_server]
+10.11.6.42   ansible_ssh_private_key_file=~/a2i-prod.pem

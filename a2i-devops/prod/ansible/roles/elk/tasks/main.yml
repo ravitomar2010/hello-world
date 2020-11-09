@@ -1,0 +1,11 @@
+---
+# tasks file for elasticsearch cluster
+
+- name: Install java 11
+  import_tasks: install-java.yml
+
+- name: Install elasticsearch
+  import_tasks: install-elasticsearch.yml
+
+- name: Install kibana
+  import_tasks: install-kibana.yml

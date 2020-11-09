@@ -14,28 +14,28 @@ module "ldap_server_security_group" {
       to_port     = 8080
       protocol    = "tcp"
       description = "Ingress for Elastic API port from withing VPC"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 389
       to_port     = 389
       protocol    = "tcp"
       description = "Ingress for Elastic API port from withing VPC"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 636
       to_port     = 636
       protocol    = "tcp"
       description = "Ingress for Elastic API port from withing VPC"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
       description = "Ingress for SSH to ldap_server from within A2i"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 0

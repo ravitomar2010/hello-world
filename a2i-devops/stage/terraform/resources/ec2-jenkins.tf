@@ -13,22 +13,15 @@ module "jenkins_security_group" {
       from_port   = 8080
       to_port     = 8080
       protocol    = "tcp"
-      description = "Ingress for Elastic API port from withing VPC"
+      description = "Ingress for Elastic API port from within VPC"
       cidr_blocks =  "${var.office_cidr}"
-    },
-    {
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      description = "Ingress for SSH only from the terraform workstation"
-      cidr_blocks = "${var.office_cidr}"
     },
     {
       from_port   = 0
       to_port     = 0
       protocol    = "-1"
       description = "Allowed all traffic from workstation"
-      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr}"
+      cidr_blocks = "${chomp(data.http.myip.body)}/32,${var.stage_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
   ]
   egress_rules        = ["all-all"]
@@ -64,7 +57,7 @@ module "jenkins" {
 resource "aws_ebs_volume" "jenkins-first" {
   depends_on           	= [module.jenkins]
   availability_zone     = "${module.jenkins.availability_zone[0]}"
-  size                  = 25
+  size                  = local.variables[terraform.workspace].ec2.jenkins.extraEBSsize
   type                  = "gp2"
   tags 			= {
 			    Name	= "jenkins-first-ebs-storage"

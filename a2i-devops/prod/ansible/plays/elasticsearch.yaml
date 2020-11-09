@@ -4,17 +4,17 @@
   remote_user: ubuntu
   become: yes
 
-  pre_tasks:
-  - name: Execute the script for mounting device
-    script: ../scripts/mount_device.sh
+  # pre_tasks:
+  # - name: Execute the script for mounting device
+  #   script: ../scripts/mount_device.sh
 
   roles:
-  - java
-  - zookeeper
+  # - java
+  # - zookeeper
   - elasticsearch
-  - install_env
-  - filebeat
-  - node-exporter
+  # - install_env
+  # - filebeat
+  # - node-exporter
 
   vars:
     aws_region: eu-west-1

@@ -1,0 +1,69 @@
+---
+    - name: Update apt repo for sonarqube
+      apt:
+        update_cache: yes
+        state: present
+
+    - name: Install OpenJDK Java11
+      become: yes
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        openjdk-11-jdk
+
+    - name: Install unzip packges for sonarqube
+      apt:
+        name: "{{ packages }}"
+        state: latest
+      vars:
+        packages:
+        - unzip
+
+    - name: downloading sonarqube zip file from sources
+      get_url:
+        url: https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.6.zip
+        dest: /home/ubuntu/
+        mode: '0440'
+
+    - name: Attempt to change ownership on directory /opt
+      become: true
+      file:
+        path: "/opt"
+        state: directory
+        recurse: yes
+        owner: "ubuntu"
+
+    - name: Unzip a file that is already sonarqube.zip file on the remote machine
+      unarchive:
+        src: /home/ubuntu/sonarqube-7.6.zip
+        dest: /opt/
+        remote_src: yes
+
+    - name: Recursively remove sonarqube /tmp directory
+      file:
+        path: /opt/sonarqube-7.6/temp/
+        state: absent
+
+    - name: Ldap Configuration on sonarqube updating sonar.properties
+      template:
+        src: sonar.properties
+        dest: /opt/sonarqube-7.6/conf/sonar.properties
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+        backup: yes
+
+    - name: Restarting sonarqube services
+      shell: /opt/sonarqube-7.6/bin/linux-x86-64/sonar.sh restart
+      register: command_result
+      become: false
+
+    - name: Checking SonarQube service status...
+      shell: /opt/sonarqube-7.6/bin/linux-x86-64/sonar.sh status
+      register: command_result_status
+
+    - debug:  var=ansible_default_ipv4.address
+
+    - debug:
+        msg: "{{ command_result_status.stdout }}"

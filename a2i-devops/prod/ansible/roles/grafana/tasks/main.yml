@@ -122,6 +122,10 @@
   command: grafana-cli plugins install percona-percona-app
   become: yes
 
+- name: Install World-Ping app
+  command: grafana-cli plugins install raintank-worldping-app
+  become: yes
+
 - name: ensure grafana is running and enabled
   service:
     name: grafana-server

@@ -1,0 +1,21 @@
+---
+cluster.name: {{ platform }}.elasticsearch
+path.data: "/var/lib/elasticsearch"
+path.logs: "/var/log/elasticsearch"
+network.bind_host: 0.0.0.0
+network.publish_host: _ec2:privateIpv4_
+cloud.node.auto_attributes: true
+{% set number = groups['elastic'].index(inventory_hostname) | int %}
+{% if number == 0 %}
+cluster.initial_master_nodes: {{inventory_hostname}}
+{% endif %}
+cluster.routing.allocation.awareness.attributes: aws_availability_zone
+discovery.zen.minimum_master_nodes: 1
+discovery.zen.hosts_provider: ec2
+discovery.ec2.tag.Name: {{ platform }}-elasticsearch
+discovery.ec2.groups: "elasticsearch"
+discovery.ec2.endpoint: ec2.{{ aws_region }}.amazonaws.com
+discovery.ec2.host_type: private_ip
+node.master: true
+node.data: true
+node.ingest: true

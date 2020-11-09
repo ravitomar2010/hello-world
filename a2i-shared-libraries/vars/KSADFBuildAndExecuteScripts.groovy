@@ -65,7 +65,7 @@ pipeline {
  					steps{
  						sh """
 
- 								response=`aws stepfunctions start-execution --state-machine-arn "arn:aws:states:eu-west-1:530328198985:stateMachine:a2i-df-model-output-pareto" --profile prod`
+ 								response=`aws stepfunctions start-execution --state-machine-arn "arn:aws:states:eu-west-1:530328198985:stateMachine:a2i-df-ksa-model-output-pareto" --profile prod`
 
  						"""
  					}
@@ -87,7 +87,7 @@ pipeline {
 					steps{
 						sh """
 
-								response=`aws stepfunctions start-execution --state-machine-arn "arn:aws:states:eu-west-1:530328198985:stateMachine:a2i-df-safety_stock_demand" --profile prod`
+								response=`aws stepfunctions start-execution --state-machine-arn "arn:aws:states:eu-west-1:530328198985:stateMachine:a2i-df-ksa-safety_stock_demand" --profile prod`
 
 						"""
 					}

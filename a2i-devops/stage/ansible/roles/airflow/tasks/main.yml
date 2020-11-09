@@ -1,0 +1,66 @@
+- name: Update apt repo and cache on all Debian/Ubuntu boxes
+  apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+- name: Install pip
+  shell: apt install python3-pip -y
+
+- name: Install airflow
+  pip:
+    name: apache-airflow
+
+- name: Initialize db for airflow
+  shell: airflow initdb
+
+- name: Ensure load_examples is set to false
+  lineinfile:
+    path: /root/airflow/airflow.cfg
+    regexp: '^load_examples'
+    line: load_examples = False
+
+- name: Ansible change port number
+  replace:
+    path: /root/airflow/airflow.cfg
+    regexp: '8080'
+    replace: "8090"
+
+- name: Creates directory
+  file:
+    path: /usr/lib/systemd/system
+    state: directory
+
+- name: Template a file to /root/airflow/airflow.env
+  template:
+    src: /etc/ansible/templates/airflow.env
+    dest: /root/airflow/airflow.env
+    owner: root
+    group: root
+    mode: '777'
+
+- name: Template a file to /usr/lib/systemd/system/airflow-scheduler.service
+  template:
+    src: /etc/ansible/templates/airflow-scheduler.service
+    dest: /usr/lib/systemd/system/airflow-scheduler.service
+    owner: root
+    group: root
+    mode: '777'
+
+- name: Template a file to /usr/lib/systemd/system/airflow-webserver.service
+  template:
+    src: /etc/ansible/templates/airflow-webserver.service
+    dest: /usr/lib/systemd/system/airflow-webserver.service
+    owner: root
+    group: root
+    mode: '777'
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: start services
+  systemd:
+    state: started
+    name: "{{ item }}"
+    enabled: yes
+  loop:
+    - airflow-webserver
+    - airflow-scheduler

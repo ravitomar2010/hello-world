@@ -28,7 +28,7 @@ module "pritunl_security_group" {
       to_port     = 22
       protocol    = "tcp"
       description = "Ingress for SSH only from the terraform workstation"
-      cidr_blocks = "${var.office_cidr},${var.prod_cidr}"
+      cidr_blocks = "${var.office_cidr},${var.prod_cidr},${var.old_prod_cidr}"
     },
     {
       from_port   = 0

@@ -1,0 +1,22 @@
+LDAP CONFIGURATION
+
+sonar.security.realm=LDAP
+ldap.url=ldap://ldap.a2i.infra
+ldap.bindDn=uid=ldap,dc=a2i,dc=infra
+ldap.bindPassword=ldap_bind@2020
+
+USER MAPPING
+
+ldap.user.baseDn=ou=users,dc=a2i,dc=infra
+ldap.user.request=(&(objectClass=inetOrgPerson)(uid={login}))
+ldap.user.realNameAttribute=cn
+ldap.user.emailAttribute=mail
+
+
+GROUP MAPPING
+
+ldap.group.baseDn=cn=sshaccess,ou=groups,dc=a2i,dc=infra
+ldap.group.request=(&(objectClass=posixGroup)(memberUid={uid}))
+
+
+sonar.log.level=DEBUG

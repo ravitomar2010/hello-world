@@ -57,9 +57,13 @@ variable "office_cidr" {
   description = "CIDR used by office local network to allow traffic without VPN"
   default     = "172.27.0.0/16"
 }
-variable "prod_cidr" {
+variable "prod_cidr_old" {
   description = "CIDR used by office local network to allow traffic without VPN"
   default     = "10.10.0.0/16"
+}
+variable "prod_cidr" {
+  description = "CIDR used by office local network to allow traffic without VPN"
+  default     = "10.11.0.0/16"
 }
 variable "stage_cidr" {
   description = "CIDR used by office local network to allow traffic without VPN"
@@ -70,9 +74,9 @@ variable "dot" {
   description = "DNS name used for infra networks"
   default = "."
 }
-variable "infra_dns" {
+variable "prod_dns" {
   description = "DNS name used for infra networks"
-  default     = "a2i.infra"
+  default     = "a2i.prod"
 }
 variable "stage_dns" {
   description = "DNS name used for infra networks"
