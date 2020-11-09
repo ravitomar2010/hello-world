@@ -1,0 +1,5 @@
+nifi-1.a2i.stage a2i-stage.pem /usr/local/nifi/logs/
+nifi-2.a2i.stage a2i-stage.pem /usr/local/nifi/logs/
+zk-1.a2i.stage a2i-infra.pem /usr/local/data/zookeeper/version-2/
+zk-2.a2i.stage a2i-infra.pem /usr/local/data/zookeeper/version-2/
+zk-3.a2i.stage a2i-infra.pem /usr/local/data/zookeeper/version-2/

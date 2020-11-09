@@ -1,0 +1,2 @@
+nifi-1.a2i.stage a2i-stage.pem
+nifi-2.a2i.stage a2i-stage.pem

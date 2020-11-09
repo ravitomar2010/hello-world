@@ -1,0 +1,15 @@
+jenkins-admin
+nifi-admin
+yogesh.patil
+malladi_reddy read_axiom
+abhinov_ray read_axiom
+raveen_sharma read_axiom
+abhishek_kumar baseintsof
+sameer_shukla baseintsof
+ravi_tomar baseintsof
+albert_abraham basetothenew
+sameer_panda baseintsof
+monika_rana baseintsof
+sanchi_bansal read_intsoft
+varun_gupta read_intsoft
+shivali_singla read_intsoft

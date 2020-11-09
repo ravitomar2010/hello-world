@@ -1,0 +1,105 @@
+mstr_batch_bi READ dss_dbo, active_dbo, stg_axiombi_dbo
+
+mstr_batch_bi_stocks MASTER audit_sysmgmt, bi_stocks
+
+mstr_batch_service READ erp_dbo, stg_axiombi_dbo
+
+mstr_batch_bi_stocks READ stg_axiombi_dbo, demand_forecast_dbo
+
+mstr_batch_audit_sysmgmt READ bi_stocks, demand_forecast_dbo, stg_axiombi_dbo
+
+mstr_batch_demand_forecast READ bi_stocks
+
+mstr_batch_service MASTER audit_sysmgmt, service_dbo, service_stage
+
+mstr_batch_audit_sysmgmt READ bi_stocks, demand_forecast_dbo
+
+mstr_batch_delivery_optimization READ stg_axiombi_dbo
+
+mstr_batch_delivery READ  stg_axiombi_dbo
+
+mstr_batch_finance READ stg_axiombi_dbo, stg_axiombi_stage, erp_dbo, active_dbo
+
+read_all_dbo READ ALL
+
+mstr_demand_forecast READ erp_dbo, erp_stage
+
+read_intsoft READ demand_forecast_dbo, demand_forecast_stage
+
+read_write_intsoft READWRITE wms_dbo, wms_stage
+
+read_write_ttn READWRITE shipment_dbo, shipment_stage
+
+mstr_demand_forecast MASTER audit_sysmgmt, bi, stg_axiombi_dbo, demand_forecast_dbo, demand_forecast_stage
+
+mstr_batch_stg_hykebi MASTER audit_sysmgmt, stg_axiombi_dbo, stg_hykebi_dbo
+
+read_intsoft READ ALL
+
+mstr_batch_bi MASTER audit_sysmgmt, bi, erp_dbo, erp_stage
+
+read_write_ttn MASTER ALL
+
+mstr_intsoft MASTER bi_dimensions, demand_forecast_dbo, demand_forecast_stage
+
+read_write_intsoft READWRITE ALL
+
+mstr_batch_demand_forecast MASTER audit_sysmgmt, bi, demand_forecast_dbo, demand_forecast_stage, bi_dimensions
+
+mstr_batch_demand_forecast READ bi_stocks
+
+mstr_intsoft MASTER audit_sysmgmt, bi, stg_axiombi_dbo, stg_axiombi_stage, supplier_visibility, supplier_visibility_dbo, supplier_visibility_stage
+
+read_ttn READ ALL
+
+qa READ ALL
+
+mstr_hyke READWRITE ALL
+
+read_write_ttn READWRITE ALL
+
+mstr_batch_optimiza MASTER audit_sysmgmt, optimiza_dbo, optimiza_stage
+
+mstr_batch_uts MASTER audit_sysmgmt, uts_dbo, uts_stage
+
+mstr_batch_pms MASTER audit_sysmgmt, pms_dbo, pms_stage
+
+mstr_batch_inventory MASTER audit_sysmgmt, inventory_dbo, inventory_stage
+
+mstr_batch_invoice MASTER audit_sysmgmt, invoice_dbo, invoice_stage
+
+mstr_batch_collection MASTER audit_sysmgmt, collection_dbo, collection_stage
+
+mstr_batch_dealer MASTER audit_sysmgmt, dealer_dbo, dealer_stage
+
+mstr_batch_pricing MASTER audit_sysmgmt, pricing_dbo, pricing_stage
+
+mstr_batch_order MASTER audit_sysmgmt, order_dbo, order_stage
+
+mstr_batch_delivery MASTER audit_sysmgmt, delivery_dbo, delivery_stage
+mstr_batch_active MASTER audit_sysmgmt, active_dbo, active_stage
+mstr_batch_cf MASTER audit_sysmgmt, cf_dbo, cf_stage
+mstr_batch_cvs MASTER audit_sysmgmt, cvs_dbo, cvs_stage
+mstr_batch_dss MASTER audit_sysmgmt, dss_dbo, dss_stage
+mstr_batch_edi MASTER audit_sysmgmt, edi_dbo, edi_stage
+mstr_batch_erp MASTER audit_sysmgmt, erp_dbo, erp_stage
+mstr_batch_estore MASTER audit_sysmgmt, estore_dbo, estore_stage
+mstr_batch_finance MASTER audit_sysmgmt, finance_dbo, finance_stage
+
+
+mstr_batch_om MASTER audit_sysmgmt, om_dbo, om_stage
+mstr_batch_shipment MASTER audit_sysmgmt, shipment_dbo, shipment_stage
+mstr_batch_stg_axiombi MASTER audit_sysmgmt, stg_axiombi_dbo, stg_axiombi_stage
+mstr_batch_supplier_visibility MASTER audit_sysmgmt, supplier_visibility_dbo, supplier_visibility_stage
+mstr_batch_audit_sysmgmt MASTER audit_sysmgmt
+mstr_batch_bi MASTER bi
+mstr_batch_bi_dimensions MASTER audit_sysmgmt, bi_dimensions
+mstr_batch_bi_imei MASTER audit_sysmgmt, bi_imei
+mstr_batch_bi_purchase MASTER audit_sysmgmt, bi_purchase
+mstr_batch_bi_sales MASTER bi_sales
+mstr_batch_cvs_reconcile MASTER cvs_reconcile
+mstr_batch_dss_bi MASTER dss_bi
+mstr_batch_dss_sysmgmt MASTER dss_sysmgmt
+mstr_batch_stg_hykebi MASTER audit_sysmgmt, stg_axiombi_dbo, stg_hykebi_dbo
+mstr_batch_delivery_optimization MASTER audit_sysmgmt, delivery_optimization_dbo, delivery_optimization_stage
+mstr_batch_hyke MASTER audit_sysmgmt, hyke_dbo, hyke_stage

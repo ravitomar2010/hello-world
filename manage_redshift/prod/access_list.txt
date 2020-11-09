@@ -1,0 +1,96 @@
+mstr_batch_uts READ demand_forcast_dbo, demand_forecast_stage
+
+mstr_batch_bi_stocks MASTER audit_sysmgmt, bi_stocks
+
+mstr_batch_bi_stocks READ stg_axiombi_dbo, demand_forecast_dbo, erp_dbo
+
+read_finance READ finance_dbo, finance_stage, stg_axiombi_dbo, erp_dbo
+
+mstr_batch_service READ erp_dbo, stg_axiombi_dbo
+
+mstr_batch_audit_sysmgmt READ bi_stocks, demand_forecast_dbo, stg_axiombi_dbo
+
+mstr_batch_demand_forecast READ bi_stocks
+
+read_axiom READ ALL
+
+mstr_batch_audit_sysmgmt READ bi_stocks, demand_forcast_dbo
+
+mstr_demand_forecast READ erp_dbo, erp_stage
+
+hyke_temp MASTER bi_dimensions
+
+mstr_axiom MASTER ALL
+
+mstr_axiom MASTER ALL
+
+read_all_dbo READ ALL
+
+hyke_temp MASTER active_dbo, active_stage, shipment_dbo, shipment_stage, demand_forecast_dbo, demand_forecast_stage
+
+mstr_axiomdev MASTER shipment_dbo, shipment_stage
+
+mstr_demand_forecast MASTER audit_sysmgmt, bi, stg_axiombi_dbo, demand_forecast_dbo, demand_forecast_stage
+
+read_ttn READ ALL
+
+mstr_batch_bi MASTER audit_sysmgmt, bi, erp_dbo, erp_stage
+
+read_write_ttn READWRITE ALL
+
+bi READ ALL
+
+mstr_batch_bi_dbo MASTER audit_sysmgmt, bi_dbo
+
+mstr_axiom MASTER ALL
+
+mstr_batch_stg_hykebi MASTER audit_sysmgmt, stg_axiombi_dbo, stg_hykebi_dbo
+
+read_write_ttn MASTER vanshika_bi_test
+
+qa READ ALL
+
+mstr_hyke READWRITE ALL
+
+mstr_batch_optimiza MASTER optimiza_dbo, optimiza_stage
+
+mstr_batch_uts MASTER uts_dbo, uts_stage
+
+mstr_batch_pms MASTER pms_dbo, pms_stage
+
+mstr_batch_inventory MASTER inventory_dbo, inventory_stage
+
+mstr_batch_invoice MASTER invoice_dbo, invoice_stage
+
+mstr_batch_collection MASTER collection_dbo, collection_stage
+
+mstr_batch_dealer MASTER dealer_dbo, dealer_stage
+
+mstr_batch_pricing MASTER pricing_dbo, pricing_stage
+
+mstr_batch_order MASTER order_dbo, order_stage
+
+mstr_batch_delivery MASTER delivery_dbo, delivery_stage
+mstr_batch_active MASTER active_dbo, active_stage
+mstr_batch_audit_sysmgmt MASTER audit_sysmgmt
+mstr_batch_bi MASTER bi
+mstr_batch_bi_dimensions MASTER bi_dimensions
+mstr_batch_bi_imei MASTER bi_imei
+mstr_batch_bi_purchase MASTER bi_purchase
+mstr_batch_bi_sales MASTER bi_sales
+mstr_batch_cf MASTER cf_dbo, cf_stage
+mstr_batch_cvs MASTER cvs_dbo, cvs_stage
+mstr_batch_cvs_reconcile MASTER cvs_reconcile
+mstr_batch_demand_forecast MASTER demand_forecast_dbo, demand_forecast_stage
+mstr_batch_dss_bi MASTER dss_bi
+mstr_batch_dss_sysmgmt MASTER dss_sysmgmt
+mstr_batch_edi MASTER edi_dbo, edi_stage
+mstr_batch_erp MASTER erp_dbo, erp_stage
+mstr_batch_estore MASTER estore_dbo, estore_stage
+mstr_batch_finance MASTER finance_dbo, finance_stage
+mstr_batch_om MASTER om_dbo, om_stage
+mstr_batch_shipment MASTER shipment_dbo, shipment_stage
+mstr_batch_stg_axiombi MASTER stg_axiombi_dbo, stg_axiombi_stage
+mstr_batch_supplier_visibility MASTER supplier_visibility
+mstr_batch_service MASTER audit_sysmgmt, service_dbo, service_stage
+mstr_batch_hyke MASTER audit_sysmgmt, hyke_dbo, hyke_stage

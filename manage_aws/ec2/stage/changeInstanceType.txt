@@ -1,0 +1,1 @@
+nifi-registry i-0b9f760c31b0c240b onload=t3.small offload=t3.micro
